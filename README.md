@@ -6,21 +6,6 @@
 
 
 <p align="center">
-  <a href="https://imposting.com/" target="_blank">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./static/android-chrome-512x512.png">
-    <img alt="imposting Logo" src="./static/android-chrome-512x512.png" width="180"/>
-  </picture>
-  </a>
-</p>
-
-<div align="center">
-<strong>
-     <a href="https://imposting.com">imposting.com</a>
-</strong>
-</div>
-
-<p align="center">
 Built with Django and AlpineJs. Schedule posts with text/image/link on Facebook public page, Instagram profesional account, TikTok business account, Linkedin, X. Deploy it yourself or contact me to help you deploy it.
 </p>
 
