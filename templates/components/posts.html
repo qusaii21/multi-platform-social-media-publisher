@@ -1,0 +1,144 @@
+<div class="mt-4"></div>
+<div class="pf-posts-container">
+
+    {% for post in posts %}
+    <div class="pf-post-card">
+        <div class="pf-post-time">{{ post.scheduled_on }}</div>
+
+        <p class="pf-post-text">{{ post.description }}</p>
+
+        {% if post.media_file %}
+
+            {% if post.has_image %}
+            <div x-data="{fullScreen: false}" style="display: flex; justify-content: center;">
+                <div x-show="!fullScreen">
+                    <img @click="fullScreen = true" src="{{ post.media_file.url }}" alt="Media file"
+                        style="max-width: 100%; height: 350px; object-fit: contain; margin-bottom: 1rem; margin-top: 1rem; border-radius: var(--pf-radius);">
+                </div>
+
+                <dialog :open="fullScreen" @click="fullScreen = false">
+                    <img src="{{ post.media_file.url }}" alt="Media file"
+                        style="max-width: 100%; height: 100%; object-fit: contain; margin-bottom: 1rem; margin-top: 1rem; border-radius: var(--pf-radius);">
+                </dialog>
+            </div>
+            {% endif %}
+
+            {% if post.has_video %}
+            <div x-data="{fullScreen: false}" style="display: flex; justify-content: center;">
+                <div x-show="!fullScreen">
+                    <video @click="fullScreen = true" controls
+                        style="max-width: 100%; height: 350px; object-fit: contain; margin-bottom: 1rem; margin-top: 1rem; border-radius: var(--pf-radius);">
+                        <source src="{{ post.media_file.url }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+
+                <dialog :open="fullScreen" @click="fullScreen = false">
+                    <video controls
+                        style="max-width: 100%; height: 100%; object-fit: contain; margin-bottom: 1rem; margin-top: 1rem; border-radius: var(--pf-radius);">
+                        <source src="{{ post.media_file.url }}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </dialog>
+            </div>
+            {% endif %}
+
+        {% endif %}
+
+        <div style="margin-top: 0.5rem;">
+
+            <span style="font-size: 0.78rem; color: var(--pf-text-dim);">Platform links:</span>
+
+            <div class="pf-post-links">
+
+                <!-- Instagram -->
+                {% if post.error_instagram %}
+                    <span data-tooltip="Retries {{ post.retries_instagram }}/10. Error: {{ post.error_instagram }}" class="pf-link-icon pf-link-error">
+                        <i class="bi bi-instagram"></i>
+                    </span>
+                {% elif post.link_instagram %}
+                    <a data-tooltip="Posted" target="_blank" href="{{ post.link_instagram }}" class="pf-link-icon pf-link-posted">
+                        <i class="bi bi-instagram"></i>
+                    </a>
+                {% elif post.post_on_instagram %}
+                    <span data-tooltip="Pending" class="pf-link-icon pf-link-pending">
+                        <i class="bi bi-instagram"></i>
+                    </span>
+                {% endif %}
+
+                <!-- Facebook -->
+                {% if post.error_facebook %}
+                    <span data-tooltip="Retries {{ post.retries_facebook }}/10. Error: {{ post.error_facebook }}" class="pf-link-icon pf-link-error">
+                        <i class="bi bi-facebook"></i>
+                    </span>
+                {% elif post.link_facebook %}
+                    <a data-tooltip="Posted" target="_blank" href="{{ post.link_facebook }}" class="pf-link-icon pf-link-posted">
+                        <i class="bi bi-facebook"></i>
+                    </a>
+                {% elif post.post_on_facebook %}
+                    <span data-tooltip="Pending" class="pf-link-icon pf-link-pending">
+                        <i class="bi bi-facebook"></i>
+                    </span>
+                {% endif %}
+
+                <!-- X -->
+                {% if post.error_x %}
+                    <span data-tooltip="Retries {{ post.retries_x }}/10. Error: {{ post.error_x }}" class="pf-link-icon pf-link-error">
+                        <i class="bi bi-twitter-x"></i>
+                    </span>
+                {% elif post.link_x %}
+                    <a data-tooltip="Posted" target="_blank" href="{{ post.link_x }}" class="pf-link-icon pf-link-posted">
+                        <i class="bi bi-twitter-x"></i>
+                    </a>
+                {% elif post.post_on_x %}
+                    <span data-tooltip="Pending" class="pf-link-icon pf-link-pending">
+                        <i class="bi bi-twitter-x"></i>
+                    </span>
+                {% endif %}
+
+                <!-- Linkedin -->
+                {% if post.error_linkedin %}
+                    <span data-tooltip="Retries {{ post.retries_linkedin }}/10. Error: {{ post.error_linkedin }}" class="pf-link-icon pf-link-error">
+                        <i class="bi bi-linkedin"></i>
+                    </span>
+                {% elif post.link_linkedin %}
+                    <a data-tooltip="Posted" target="_blank" href="{{ post.link_linkedin }}" class="pf-link-icon pf-link-posted">
+                        <i class="bi bi-linkedin"></i>
+                    </a>
+                {% elif post.post_on_linkedin %}
+                    <span data-tooltip="Pending" class="pf-link-icon pf-link-pending">
+                        <i class="bi bi-linkedin"></i>
+                    </span>
+                {% endif %}
+
+                <!-- TikTok -->
+                {% if post.error_tiktok %}
+                    <span data-tooltip="Retries {{ post.retries_tiktok }}/10. Error: {{ post.error_tiktok }}" class="pf-link-icon pf-link-error">
+                        <i class="bi bi-tiktok"></i>
+                    </span>
+                {% elif post.link_tiktok %}
+                    <a data-tooltip="Posted" target="_blank" href="{{ post.link_tiktok }}" class="pf-link-icon pf-link-posted">
+                        <i class="bi bi-tiktok"></i>
+                    </a>
+                {% elif post.post_on_tiktok %}
+                    <span data-tooltip="Pending" class="pf-link-icon pf-link-pending">
+                        <i class="bi bi-tiktok"></i>
+                    </span>
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+        <div class="pf-post-actions">
+            <a href="{% url 'schedule_delete' post_id=post.id %}" class="pf-delete-btn">
+                <i class="bi bi-trash"></i> Delete
+            </a>
+        </div>
+
+
+    </div>
+    {% endfor %}
+
+</div>

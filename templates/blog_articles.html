@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page-title %} Blog {% endblock %}
+
+
+{% block body %}
+
+<section class="pf-section">
+
+    <div class="pf-section-header">
+        <h2>📋 Content inspiration</h2>
+        <p>Huge lists of ideas for what to post. Never run out of content ideas.</p>
+    </div>
+
+    <div class="pf-blog-grid">
+
+        {% for item in items %}
+        <div class="pf-card pf-blog-card">
+            <a href="{% url "blog_article" blog_slug=item.blog_slug %}">
+                {{ item.blog_title }}
+            </a>
+        </div>
+        {% endfor %}
+
+    </div>
+
+</section>
+
+
+<section class="pf-cta-section">
+    <h2>Start posting today!</h2>
+
+    <a class="pf-btn pf-btn-primary pf-btn-lg" href="{% url "social:begin" "google-oauth2" %}?next=/">
+        <i class="bi bi-google"></i>
+        Get Started with Google
+    </a>
+
+    <span class="pf-trial-note">
+        ✨ 7-day free trial included
+    </span>
+</section>
+
+{% endblock %}

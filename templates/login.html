@@ -1,0 +1,350 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block body %}
+
+
+<!-- Hero Section -->
+<section class="pf-hero">
+
+    <h1>
+        <span class="pf-gradient-text">Save time</span> with social media posting
+    </h1>
+    <p class="pf-hero-sub">
+        Keep your brand active daily <strong>and get new leads passively.</strong>
+        Schedule once, publish everywhere.
+    </p>
+
+    <a class="pf-btn pf-btn-primary pf-btn-lg" href="{% url "social:begin" "google-oauth2" %}?next=/">
+        <i class="bi bi-google"></i>
+        Get Started with Google
+    </a>
+
+    <img class="pf-hero-image" src="{% static 'hero-image.png' %}" alt="PostFlow scheduling dashboard" width="520" height="520">
+
+    <div class="pf-scroll-hint">
+        <span>Discover more below</span>
+        <i class="bi bi-chevron-down"></i>
+    </div>
+
+</section>
+
+
+<!-- Comparison Section -->
+<section class="pf-section">
+    <div class="pf-section-header">
+        <h2>Why <span class="pf-gradient-text">PostFlow</span>?</h2>
+        <p>Stop switching between apps. Schedule once, post on all platforms.</p>
+    </div>
+
+    <div class="pf-comparison">
+
+        <div class="pf-card-static" style="border-left: 3px solid var(--pf-error);">
+            <h3>🛑 Without PostFlow</h3>
+            <ul>
+                <li><span>Open LinkedIn, write post, publish</span></li>
+                <li><span>Copy text, open X, paste, publish</span></li>
+                <li><span>Copy text, open Meta Business, paste, publish</span></li>
+                <li><span>Copy text, open TikTok, paste, publish</span></li>
+                <li><span>Repeat. Every. Single. Day. 😩</span></li>
+            </ul>
+        </div>
+
+        <div class="pf-card-static" style="border-left: 3px solid var(--pf-success);">
+            <h3>✅ With PostFlow</h3>
+            <ul>
+                <li><span>Write your post once</span></li>
+                <li><span>Select your platforms</span></li>
+                <li><span>Schedule or publish instantly</span></li>
+                <li><span>Done! Go focus on what matters 🤩</span></li>
+                <li><span>Works with LinkedIn, X, Facebook, Instagram & TikTok</span></li>
+            </ul>
+        </div>
+
+    </div>
+</section>
+
+
+<!-- Screenshots Section -->
+<section class="pf-section">
+
+    <div class="pf-section-header">
+        <h2>How it works</h2>
+        <p>Simple, clean, and straight to the point. No bloat, just posting.</p>
+    </div>
+
+    <div class="pf-gallery">
+
+        <div class="pf-gallery-item">
+            <strong>1. Connect your accounts</strong>
+            <p>Authorize PostFlow to post on your behalf. One click per platform. If a token expires, just re-authorize.</p>
+
+            <div x-data="{fullScreen: false}" style="display: flex; justify-content: center;">
+                <div x-show="!fullScreen">
+                    <img
+                    x-cloak x-show="theme === 'dark'" src="{% static 'dark-integrations.png' %}" alt="PostFlow integrations"
+                    @click="fullScreen = true"
+                    class="img-not-fullscreen">
+
+                    <img
+                    x-cloak x-show="theme === 'light'" src="{% static 'light-integrations.png' %}" alt="PostFlow integrations"
+                    @click="fullScreen = true"
+                    class="img-not-fullscreen">
+                </div>
+
+                <dialog :open="fullScreen" @click="fullScreen = false">
+                    <img x-cloak x-show="theme === 'dark'" src="{% static 'dark-integrations.png' %}" alt="PostFlow integrations"
+                        class="img-fullscreen">
+                    <img x-cloak x-show="theme === 'light'" src="{% static 'light-integrations.png' %}" alt="PostFlow integrations"
+                        class="img-fullscreen">
+                </dialog>
+            </div>
+        </div>
+
+        <div class="pf-gallery-item">
+            <strong>2. View your calendar</strong>
+            <p>See your entire year at a glance. Days with posts are highlighted. Click any day to schedule.</p>
+
+            <div x-data="{fullScreen: false}" style="display: flex; justify-content: center;">
+                <div x-show="!fullScreen">
+                    <img
+                    x-cloak x-show="theme === 'dark'" src="{% static 'dark-calendar.png' %}" alt="PostFlow calendar"
+                    @click="fullScreen = true"
+                    class="img-not-fullscreen">
+
+                    <img
+                    x-cloak x-show="theme === 'light'" src="{% static 'light-calendar.png' %}" alt="PostFlow calendar"
+                    @click="fullScreen = true"
+                    class="img-not-fullscreen">
+                </div>
+
+                <dialog :open="fullScreen" @click="fullScreen = false">
+                    <img x-cloak x-show="theme === 'dark'" src="{% static 'dark-calendar.png' %}" alt="PostFlow calendar"
+                        class="img-fullscreen">
+                    <img x-cloak x-show="theme === 'light'" src="{% static 'light-calendar.png' %}" alt="PostFlow calendar"
+                        class="img-fullscreen">
+                </dialog>
+            </div>
+        </div>
+
+        <div class="pf-gallery-item">
+            <strong>3. Write your post</strong>
+            <p>A clean form to write your content and attach an image or video. Select platforms, pick a time, done.</p>
+
+            <div x-data="{fullScreen: false}" style="display: flex; justify-content: center;">
+                <div x-show="!fullScreen">
+                    <img
+                    x-cloak x-show="theme === 'dark'" src="{% static 'dark-schedule-post.png' %}" alt="PostFlow schedule post"
+                    @click="fullScreen = true"
+                    class="img-not-fullscreen">
+
+                    <img
+                    x-cloak x-show="theme === 'light'" src="{% static 'light-schedule-post.png' %}" alt="PostFlow schedule post"
+                    @click="fullScreen = true"
+                    class="img-not-fullscreen">
+                </div>
+
+                <dialog :open="fullScreen" @click="fullScreen = false">
+                    <img x-cloak x-show="theme === 'dark'" src="{% static 'dark-schedule-post.png' %}" alt="PostFlow schedule post"
+                        class="img-fullscreen">
+                    <img x-cloak x-show="theme === 'light'" src="{% static 'light-schedule-post.png' %}" alt="PostFlow schedule post"
+                        class="img-fullscreen">
+                </dialog>
+            </div>
+        </div>
+
+        <div class="pf-gallery-item">
+            <strong>4. TikTok? Extra settings covered.</strong>
+            <p>Posting to TikTok requires additional settings. We've got a dedicated form for that.</p>
+
+            <div x-data="{fullScreen: false}" style="display: flex; justify-content: center;">
+                <div x-show="!fullScreen">
+                    <img
+                    x-cloak x-show="theme === 'dark'" src="{% static 'dark-tiktok-form.png' %}" alt="PostFlow TikTok form"
+                    @click="fullScreen = true"
+                    class="img-not-fullscreen">
+
+                    <img
+                    x-cloak x-show="theme === 'light'" src="{% static 'light-tiktok-form.png' %}" alt="PostFlow TikTok form"
+                    @click="fullScreen = true"
+                    class="img-not-fullscreen">
+                </div>
+
+                <dialog :open="fullScreen" @click="fullScreen = false">
+                    <img x-cloak x-show="theme === 'dark'" src="{% static 'dark-tiktok-form.png' %}" alt="PostFlow TikTok form"
+                        class="img-fullscreen">
+                    <img x-cloak x-show="theme === 'light'" src="{% static 'light-tiktok-form.png' %}" alt="PostFlow TikTok form"
+                        class="img-fullscreen">
+                </dialog>
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- Pricing Section -->
+<section id="pricing" class="pf-section">
+
+    <div class="pf-section-header">
+        <h2>Simple, honest pricing</h2>
+        <p>No hidden fees. No marketing tricks. You get 7 days free to see if it works for you.</p>
+    </div>
+
+    <div class="pf-pricing-grid">
+
+        <div class="pf-pricing-card">
+            <h3>👨‍💻 Open Source</h3>
+            <div class="pf-price">FREE — Self-hosted</div>
+            <p class="pf-price-desc">
+                You'll need a VM, a Cloudflare account for storing media files,
+                developer accounts and some approvals from social media providers.
+            </p>
+            <a class="pf-btn pf-btn-secondary" target="_blank" href="https://github.com/ClimenteA/social-media-posts-scheduler">
+                I'm a tech connoisseur
+            </a>
+        </div>
+
+        <div class="pf-pricing-card featured">
+            <span class="pf-badge pf-badge-popular" style="position: absolute; top: -10px;">MOST POPULAR</span>
+            <h3>🫡 Committed Poster</h3>
+            <div class="pf-price">$120 / year — $10/mo</div>
+            <p class="pf-price-desc">
+                You're serious about building a brand. Focus on content — we'll handle the boring stuff.
+                Includes 7-day free trial.
+            </p>
+            <a class="pf-btn pf-btn-primary" href="{% url "social:begin" "google-oauth2" %}?next=/">
+                Start free trial
+            </a>
+        </div>
+
+        <div class="pf-pricing-card">
+            <h3>😎 Vibe Poster</h3>
+            <div class="pf-price">$1 per published post</div>
+            <p class="pf-price-desc">
+                You post when inspiration strikes. One click, all your accounts.
+                Worth a buck to skip the copy-paste dance?
+            </p>
+            <a class="pf-btn pf-btn-secondary" href="{% url "social:begin" "google-oauth2" %}?next=/">
+                I'm a vibe poster
+            </a>
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- FAQ Section -->
+<section id="faq" class="pf-section">
+
+    <div class="pf-section-header">
+        <h2>Frequently asked questions</h2>
+        <p>Everything you need to know about PostFlow.</p>
+    </div>
+
+    <div class="pf-faq" style="max-width: 800px; margin: 0 auto;">
+
+        <details>
+            <summary>Is it good for me?</summary>
+            <div>
+                <p>
+                    <strong>You can schedule a post with text + image on Facebook, Instagram, TikTok, LinkedIn, X.</strong>
+                </p>
+                <p>✍️ Facebook public page and Instagram professional account need to be linked in Meta Business Suite.
+                    Posts will be published on the Facebook public page and the Instagram professional account.</p>
+                <ul>
+                    <li>1 Facebook Public Page</li>
+                    <li>1 Instagram Professional account</li>
+                </ul>
+                <p>✍️ You'll need a TikTok business account. Posts will be published on that TikTok business account.</p>
+                <ul><li>1 TikTok business account</li></ul>
+                <p>✍️ You'll need a LinkedIn account. Posts will be published on that LinkedIn account.</p>
+                <ul><li>1 LinkedIn account</li></ul>
+                <p>✍️ An X account is enough. Posts will be published on that X account.</p>
+                <ul><li>1 X account</li></ul>
+            </div>
+        </details>
+
+        <details>
+            <summary>How many posts can I send per day?</summary>
+            <p>
+                You can make 2 posts per day on each platform.
+                Ex: X: 2 posts, Facebook: 2 posts, TikTok: 2 posts etc.
+                Trust me — it's more than enough.
+            </p>
+        </details>
+
+        <details>
+            <summary>Can I post reels (videos)?</summary>
+            <p>
+                Yes, on Facebook, Instagram and TikTok. YouTube will be added soon.
+                Videos will be processed to ensure they meet minimum requirements for publishing.
+                Same with images — even if you post just text, it will be converted to an image (super useful for Instagram).
+            </p>
+        </details>
+
+        <details>
+            <summary>Does it have analytics?</summary>
+            <div>
+                <p>
+                    No. Turn on notifications — if you have many notifications you did good, if not, you need to improve.
+                    PostFlow takes the practical approach. Check the social media apps directly for detailed data.
+                </p>
+                <img style="border-radius: var(--pf-radius); max-width: 100%;" src="{% static 'johns-weather-forecating-stone.jpg' %}" alt="Simple analytics approach">
+            </div>
+        </details>
+
+        <details>
+            <summary>Why is posting consistently important?</summary>
+            <p>
+                It helps you get in front of your leads.
+                It helps potential clients choose you over competition.
+                It's about building trust and showing how you can help.
+            </p>
+        </details>
+
+        <details>
+            <summary>What if I don't like this app?</summary>
+            <p>
+                You have 7 days free to test it. No commitment, no credit card required upfront.
+            </p>
+        </details>
+
+        <details>
+            <summary>How will I pay if I like it?</summary>
+            <p>Old school wire bank transfer.</p>
+        </details>
+
+        <details>
+            <summary>Why don't I see Threads, Mastodon, Bluesky etc.?</summary>
+            <p>They are not currently supported.</p>
+        </details>
+
+        <details>
+            <summary>Why only login with Google?</summary>
+            <p>It's a reliable way to verify real accounts. Everyone has a Google account nowadays.</p>
+        </details>
+
+    </div>
+
+</section>
+
+
+<!-- Final CTA -->
+<section class="pf-cta-section">
+    <h2>Ready to <span class="pf-gradient-text">simplify</span> your posting?</h2>
+
+    <a class="pf-btn pf-btn-primary pf-btn-lg" href="{% url "social:begin" "google-oauth2" %}?next=/">
+        <i class="bi bi-google"></i>
+        Get Started with Google
+    </a>
+
+    <span class="pf-trial-note">
+        ✨ 7-day free trial included
+    </span>
+</section>
+
+{% endblock %}

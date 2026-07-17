@@ -1,0 +1,970 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page-title %}Calendar{% endblock %}
+
+{% block body %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist+Mono:wght@300;400;500;600&display=swap');
+
+    :root {
+        --bg: #0e0e10;
+        --surface: #18181c;
+        --surface-2: #222228;
+        --border: #2e2e38;
+        --text: #f0efe8;
+        --text-muted: #6b6b7a;
+        --text-dim: #3a3a48;
+        --accent: #f5a623;
+        --ig: #e1306c;
+        --fb: #1877f2;
+        --tt: #e8e8e8;
+        --li: #0a66c2;
+        --tw: #e0e0e0;
+        --radius: 12px;
+        --panel-w: 360px;
+    }
+
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    html,
+    body {
+        height: 100%;
+        overflow: hidden;
+    }
+
+    body {
+        background: var(--bg);
+        font-family: 'Geist Mono', monospace;
+        color: var(--text);
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+    }
+
+    /* TOP BAR */
+    .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 2rem;
+        height: 54px;
+        border-bottom: 1px solid var(--border);
+        background: var(--surface);
+        flex-shrink: 0;
+        gap: 1rem;
+    }
+
+    .topbar-title {
+        font-family: 'Instrument Serif', serif;
+        font-size: 1.2rem;
+        color: var(--text);
+    }
+
+    .topbar-title em {
+        font-style: italic;
+        color: var(--accent);
+    }
+
+    .topbar-right {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .year-select-wrap {
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 0.3rem 0.85rem;
+    }
+
+    .year-select-wrap select {
+        background: transparent;
+        border: none;
+        color: var(--text);
+        font-family: 'Geist Mono', monospace;
+        font-size: 0.76rem;
+        cursor: pointer;
+        outline: none;
+        appearance: none;
+    }
+
+    .btn-today {
+        background: var(--accent);
+        color: #0e0e10;
+        font-family: 'Geist Mono', monospace;
+        font-size: 0.74rem;
+        font-weight: 600;
+        padding: 0.42rem 1rem;
+        border-radius: 999px;
+        text-decoration: none;
+        transition: opacity 0.15s, transform 0.15s;
+        white-space: nowrap;
+    }
+
+    .btn-today:hover {
+        opacity: 0.82;
+        transform: scale(0.97);
+    }
+
+    /* MAIN SPLIT */
+    .main {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+    }
+
+    /* LEFT YEAR VIEW */
+    .year-view {
+        flex: 1;
+        padding: 1.25rem 1.5rem;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+    }
+
+    .year-view::-webkit-scrollbar {
+        width: 3px;
+    }
+
+    .year-view::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+    }
+
+    .section-label {
+        font-size: 0.6rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--border);
+    }
+
+    /* MONTH ROW */
+    .month-row {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        padding: 0.45rem 0.6rem;
+        border-radius: 8px;
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition: background 0.12s, border-color 0.12s;
+    }
+
+    .month-row:hover {
+        background: var(--surface-2);
+    }
+
+    .month-row.selected {
+        background: var(--surface-2);
+        border-color: var(--accent) !important;
+    }
+
+    .month-row.is-current .month-name {
+        color: var(--accent);
+    }
+
+    .month-name {
+        font-family: 'Instrument Serif', serif;
+        font-size: 0.9rem;
+        min-width: 78px;
+        color: var(--text);
+        flex-shrink: 0;
+    }
+
+    /* HEAT DOTS */
+    .heat-strip {
+        display: flex;
+        gap: 2.5px;
+        align-items: center;
+        flex-wrap: nowrap;
+    }
+
+    .hd {
+        width: 12px;
+        height: 20px;
+        border-radius: 2px;
+        border: 1px solid var(--border);
+        background: var(--surface-2);
+        transition: transform 0.1s, opacity 0.1s;
+        flex-shrink: 0;
+        position: relative;
+        cursor: pointer;
+    }
+
+    .hd:hover {
+        transform: scaleY(1.4);
+        z-index: 5;
+    }
+
+    .hd.h0 {
+        background: var(--surface-2);
+    }
+
+    .hd.h1 {
+        background: #1e3a12;
+        border-color: #2d5219;
+    }
+
+    .hd.h2 {
+        background: #2d5219;
+        border-color: #3d6e24;
+    }
+
+    .hd.h3 {
+        background: #3d6e24;
+        border-color: #52912f;
+    }
+
+    .hd.h4 {
+        background: #52912f;
+        border-color: #6db83e;
+    }
+
+    .hd.h5 {
+        background: #6db83e;
+        border-color: #90d955;
+    }
+
+    .hd.is-today {
+        border-color: var(--accent) !important;
+        box-shadow: 0 0 0 1px var(--accent);
+    }
+
+    /* month total badge */
+    .month-total {
+        font-size: 0.6rem;
+        color: var(--text-muted);
+        min-width: 30px;
+        text-align: right;
+        flex-shrink: 0;
+    }
+
+    .month-total.has-posts {
+        color: var(--accent);
+    }
+
+    /* Legend row */
+    .legend-row {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.58rem;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+        padding-left: 0.6rem;
+    }
+
+    .lg {
+        width: 10px;
+        height: 16px;
+        border-radius: 2px;
+        border: 1px solid var(--border);
+    }
+
+    /* RIGHT DETAIL PANEL */
+    .detail-panel {
+        width: var(--panel-w);
+        border-left: 1px solid var(--border);
+        background: var(--surface);
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        overflow: hidden;
+        transition: width 0.25s;
+    }
+
+    .panel-header {
+        padding: 1.25rem 1.5rem 1rem;
+        border-bottom: 1px solid var(--border);
+        flex-shrink: 0;
+    }
+
+    .panel-title {
+        font-family: 'Instrument Serif', serif;
+        font-size: 1.75rem;
+        font-style: italic;
+        line-height: 1.1;
+        color: var(--text);
+    }
+
+    .panel-title strong {
+        font-style: normal;
+        color: var(--accent);
+        font-weight: 400;
+    }
+
+    .panel-stats {
+        display: flex;
+        gap: 1.25rem;
+        margin-top: 0.8rem;
+    }
+
+    .ps {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .ps-n {
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: var(--text);
+        line-height: 1;
+    }
+
+    .ps-l {
+        font-size: 0.56rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-muted);
+    }
+
+    /* Platform filter tabs */
+    .p-tabs {
+        display: flex;
+        border-bottom: 1px solid var(--border);
+        flex-shrink: 0;
+    }
+
+    .ptab {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        padding: 0.55rem 0;
+        font-size: 0.58rem;
+        color: var(--text-muted);
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: color 0.15s, border-color 0.15s;
+        letter-spacing: 0.04em;
+    }
+
+    .ptab i {
+        font-size: 0.85rem;
+    }
+
+    .ptab:hover {
+        color: var(--text);
+    }
+
+    .ptab.active {
+        color: var(--text);
+        border-bottom-color: var(--accent);
+    }
+
+    .ptab.p-ig.active {
+        color: var(--ig);
+        border-bottom-color: var(--ig);
+    }
+
+    .ptab.p-fb.active {
+        color: var(--fb);
+        border-bottom-color: var(--fb);
+    }
+
+    .ptab.p-tt.active {
+        color: #eee;
+        border-bottom-color: #eee;
+    }
+
+    .ptab.p-li.active {
+        color: var(--li);
+        border-bottom-color: var(--li);
+    }
+
+    .ptab.p-tw.active {
+        color: #bbb;
+        border-bottom-color: #bbb;
+    }
+
+    /* Day list */
+    .day-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 0.5rem 0.6rem;
+    }
+
+    .day-list::-webkit-scrollbar {
+        width: 3px;
+    }
+
+    .day-list::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+    }
+
+    .de {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.42rem 0.65rem;
+        border-radius: 7px;
+        text-decoration: none;
+        border: 1px solid transparent;
+        transition: background 0.1s, border-color 0.1s;
+        cursor: pointer;
+    }
+
+    .de:hover {
+        background: var(--surface-2);
+        border-color: var(--border);
+    }
+
+    .de.has-c {
+        background: rgba(255, 255, 255, 0.025);
+    }
+
+    .de.is-today {
+        border-color: var(--accent) !important;
+        background: rgba(245, 166, 35, 0.07);
+    }
+
+    .de-num {
+        font-size: 0.82rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        min-width: 26px;
+    }
+
+    .de.has-c .de-num,
+    .de.is-today .de-num {
+        color: var(--text);
+    }
+
+    .de.is-today .de-num {
+        color: var(--accent);
+    }
+
+    .de-icons {
+        display: flex;
+        gap: 5px;
+        flex: 1;
+        align-items: center;
+    }
+
+    .di {
+        display: flex;
+        align-items: center;
+        gap: 1px;
+        opacity: 0.18;
+        font-size: 0.72rem;
+    }
+
+    .di.on {
+        opacity: 1;
+    }
+
+    .di.on.ig i {
+        color: var(--ig);
+    }
+
+    .di.on.fb i {
+        color: var(--fb);
+    }
+
+    .di.on.tt i {
+        color: #ddd;
+    }
+
+    .di.on.li i {
+        color: var(--li);
+    }
+
+    .di.on.tw i {
+        color: #bbb;
+    }
+
+    .di sup {
+        font-size: 0.5rem;
+        color: var(--text-muted);
+        line-height: 1;
+    }
+
+    .di.on sup {
+        color: var(--text);
+    }
+
+    .de-badge {
+        font-size: 0.58rem;
+        padding: 0.1rem 0.4rem;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        white-space: nowrap;
+    }
+
+    .de.has-c .de-badge {
+        border-color: rgba(245, 166, 35, 0.35);
+        color: var(--accent);
+        background: rgba(245, 166, 35, 0.08);
+    }
+
+    /* empty state */
+    .empty-state {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: var(--text-dim);
+        font-size: 0.76rem;
+        text-align: center;
+        gap: 0.5rem;
+    }
+
+    .empty-state .ei {
+        font-size: 2rem;
+        opacity: 0.25;
+    }
+
+    /* Stagger animation */
+    .month-row {
+        opacity: 0;
+        animation: row-in 0.35s ease forwards;
+    }
+
+    .month-row:nth-child(1) {
+        animation-delay: 0ms;
+    }
+
+    .month-row:nth-child(2) {
+        animation-delay: 35ms;
+    }
+
+    .month-row:nth-child(3) {
+        animation-delay: 70ms;
+    }
+
+    .month-row:nth-child(4) {
+        animation-delay: 105ms;
+    }
+
+    .month-row:nth-child(5) {
+        animation-delay: 140ms;
+    }
+
+    .month-row:nth-child(6) {
+        animation-delay: 175ms;
+    }
+
+    .month-row:nth-child(7) {
+        animation-delay: 210ms;
+    }
+
+    .month-row:nth-child(8) {
+        animation-delay: 245ms;
+    }
+
+    .month-row:nth-child(9) {
+        animation-delay: 280ms;
+    }
+
+    .month-row:nth-child(10) {
+        animation-delay: 315ms;
+    }
+
+    .month-row:nth-child(11) {
+        animation-delay: 350ms;
+    }
+
+    .month-row:nth-child(12) {
+        animation-delay: 385ms;
+    }
+
+    @keyframes row-in {
+        from {
+            opacity: 0;
+            transform: translateX(-8px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @media (max-width: 768px) {
+
+        html,
+        body {
+            overflow: auto;
+            height: auto;
+        }
+
+        .main {
+            flex-direction: column;
+        }
+
+        .detail-panel {
+            width: 100%;
+            border-left: none;
+            border-top: 1px solid var(--border);
+            min-height: 60vh;
+        }
+
+        .year-view {
+            overflow-y: visible;
+        }
+
+        .hd {
+            width: 10px;
+        }
+    }
+</style>
+
+<!-- TOP BAR -->
+<header class="topbar">
+    <div class="topbar-title">Content <em>Calendar</em></div>
+    <div class="topbar-right">
+        <div class="year-select-wrap">
+            <select x-data="{}" @change="document.location.href=`?year=${$event.target.value}`">
+                {% for year in select_years %}
+                <option value="{{ year }}" {% if selected_year==year %}selected{% endif %}>{{ year }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <a class="btn-today" href="{% url 'schedule_form' isodate=today %}">+ Post Today</a>
+    </div>
+</header>
+
+<div class="main">
+
+    <!-- YEAR VIEW (left) -->
+    <div class="year-view">
+        <div class="section-label">{{ selected_year }} · Click a month to explore</div>
+
+        <div class="legend-row">
+            <span>Posts/day:</span>
+            <div class="lg" style="background:var(--surface-2)"></div>
+            <div class="lg" style="background:#1e3a12;border-color:#2d5219"></div>
+            <div class="lg" style="background:#2d5219;border-color:#3d6e24"></div>
+            <div class="lg" style="background:#3d6e24;border-color:#52912f"></div>
+            <div class="lg" style="background:#52912f;border-color:#6db83e"></div>
+            <div class="lg" style="background:#6db83e;border-color:#90d955"></div>
+        </div>
+
+        <!-- JANUARY -->
+        {% with m=calendar_data.january %}
+        <div class="month-row {% if m.current_month %}is-current{% endif %}" data-key="january"
+            onclick="selectMonth('january')">
+            <div class="month-name">January</div>
+            <div class="heat-strip" id="hs-january">
+                {% for d in m.days %}{% with
+                t=d.instagram_count|add:d.facebook_count|add:d.tiktok_count|add:d.linkedin_count|add:d.twitter_count %}
+                <div class="hd {% if t == 0 %}h0{% elif t == 1 %}h1{% elif t == 2 %}h2{% elif t == 3 %}h3{% elif t == 4 %}h4{% else %}h5{% endif %} {% if d.is_today %}is-today{% endif %}"
+                    title="Day {{ d.day }} · {{ t }} posts"></div>{% endwith %}{% endfor %}
+            </div>
+        </div>
+        {% endwith %}
+
+        <!-- FEBRUARY -->
+        {% with m=calendar_data.february %}
+        <div class="month-row {% if m.current_month %}is-current{% endif %}" data-key="february"
+            onclick="selectMonth('february')">
+            <div class="month-name">February</div>
+            <div class="heat-strip">
+                {% for d in m.days %}{% with
+                t=d.instagram_count|add:d.facebook_count|add:d.tiktok_count|add:d.linkedin_count|add:d.twitter_count %}
+                <div class="hd {% if t == 0 %}h0{% elif t == 1 %}h1{% elif t == 2 %}h2{% elif t == 3 %}h3{% elif t == 4 %}h4{% else %}h5{% endif %} {% if d.is_today %}is-today{% endif %}"
+                    title="Day {{ d.day }} · {{ t }} posts"></div>{% endwith %}{% endfor %}
+            </div>
+        </div>
+        {% endwith %}
+
+        <!-- MARCH -->
+        {% with m=calendar_data.march %}
+        <div class="month-row {% if m.current_month %}is-current{% endif %}" data-key="march"
+            onclick="selectMonth('march')">
+            <div class="month-name">March</div>
+            <div class="heat-strip">
+                {% for d in m.days %}{% with
+                t=d.instagram_count|add:d.facebook_count|add:d.tiktok_count|add:d.linkedin_count|add:d.twitter_count %}
+                <div class="hd {% if t == 0 %}h0{% elif t == 1 %}h1{% elif t == 2 %}h2{% elif t == 3 %}h3{% elif t == 4 %}h4{% else %}h5{% endif %} {% if d.is_today %}is-today{% endif %}"
+                    title="Day {{ d.day }} · {{ t }} posts"></div>{% endwith %}{% endfor %}
+            </div>
+        </div>
+        {% endwith %}
+
+        <!-- APRIL -->
+        {% with m=calendar_data.april %}
+        <div class="month-row {% if m.current_month %}is-current{% endif %}" data-key="april"
+            onclick="selectMonth('april')">
+            <div class="month-name">April</div>
+            <div class="heat-strip">
+                {% for d in m.days %}{% with
+                t=d.instagram_count|add:d.facebook_count|add:d.tiktok_count|add:d.linkedin_count|add:d.twitter_count %}
+                <div class="hd {% if t == 0 %}h0{% elif t == 1 %}h1{% elif t == 2 %}h2{% elif t == 3 %}h3{% elif t == 4 %}h4{% else %}h5{% endif %} {% if d.is_today %}is-today{% endif %}"
+                    title="Day {{ d.day }} · {{ t }} posts"></div>{% endwith %}{% endfor %}
+            </div>
+        </div>
+        {% endwith %}
+
+        <!-- MAY -->
+        {% with m=calendar_data.may %}
+        <div class="month-row {% if m.current_month %}is-current{% endif %}" data-key="may"
+            onclick="selectMonth('may')">
+            <div class="month-name">May</div>
+            <div class="heat-strip">
+                {% for d in m.days %}{% with
+                t=d.instagram_count|add:d.facebook_count|add:d.tiktok_count|add:d.linkedin_count|add:d.twitter_count %}
+                <div class="hd {% if t == 0 %}h0{% elif t == 1 %}h1{% elif t == 2 %}h2{% elif t == 3 %}h3{% elif t == 4 %}h4{% else %}h5{% endif %} {% if d.is_today %}is-today{% endif %}"
+                    title="Day {{ d.day }} · {{ t }} posts"></div>{% endwith %}{% endfor %}
+            </div>
+        </div>
+        {% endwith %}
+
+        <!-- JUNE -->
+        {% with m=calendar_data.june %}
+        <div class="month-row {% if m.current_month %}is-current{% endif %}" data-key="june"
+            onclick="selectMonth('june')">
+            <div class="month-name">June</div>
+            <div class="heat-strip">
+                {% for d in m.days %}{% with
+                t=d.instagram_count|add:d.facebook_count|add:d.tiktok_count|add:d.linkedin_count|add:d.twitter_count %}
+                <div class="hd {% if t == 0 %}h0{% elif t == 1 %}h1{% elif t == 2 %}h2{% elif t == 3 %}h3{% elif t == 4 %}h4{% else %}h5{% endif %} {% if d.is_today %}is-today{% endif %}"
+                    title="Day {{ d.day }} · {{ t }} posts"></div>{% endwith %}{% endfor %}
+            </div>
+        </div>
+        {% endwith %}
+
+        <!-- JULY -->
+        {% with m=calendar_data.july %}
+        <div class="month-row {% if m.current_month %}is-current{% endif %}" data-key="july"
+            onclick="selectMonth('july')">
+            <div class="month-name">July</div>
+            <div class="heat-strip">
+                {% for d in m.days %}{% with
+                t=d.instagram_count|add:d.facebook_count|add:d.tiktok_count|add:d.linkedin_count|add:d.twitter_count %}
+                <div class="hd {% if t == 0 %}h0{% elif t == 1 %}h1{% elif t == 2 %}h2{% elif t == 3 %}h3{% elif t == 4 %}h4{% else %}h5{% endif %} {% if d.is_today %}is-today{% endif %}"
+                    title="Day {{ d.day }} · {{ t }} posts"></div>{% endwith %}{% endfor %}
+            </div>
+        </div>
+        {% endwith %}
+
+        <!-- AUGUST -->
+        {% with m=calendar_data.august %}
+        <div class="month-row {% if m.current_month %}is-current{% endif %}" data-key="august"
+            onclick="selectMonth('august')">
+            <div class="month-name">August</div>
+            <div class="heat-strip">
+                {% for d in m.days %}{% with
+                t=d.instagram_count|add:d.facebook_count|add:d.tiktok_count|add:d.linkedin_count|add:d.twitter_count %}
+                <div class="hd {% if t == 0 %}h0{% elif t == 1 %}h1{% elif t == 2 %}h2{% elif t == 3 %}h3{% elif t == 4 %}h4{% else %}h5{% endif %} {% if d.is_today %}is-today{% endif %}"
+                    title="Day {{ d.day }} · {{ t }} posts"></div>{% endwith %}{% endfor %}
+            </div>
+        </div>
+        {% endwith %}
+
+        <!-- SEPTEMBER -->
+        {% with m=calendar_data.september %}
+        <div class="month-row {% if m.current_month %}is-current{% endif %}" data-key="september"
+            onclick="selectMonth('september')">
+            <div class="month-name">September</div>
+            <div class="heat-strip">
+                {% for d in m.days %}{% with
+                t=d.instagram_count|add:d.facebook_count|add:d.tiktok_count|add:d.linkedin_count|add:d.twitter_count %}
+                <div class="hd {% if t == 0 %}h0{% elif t == 1 %}h1{% elif t == 2 %}h2{% elif t == 3 %}h3{% elif t == 4 %}h4{% else %}h5{% endif %} {% if d.is_today %}is-today{% endif %}"
+                    title="Day {{ d.day }} · {{ t }} posts"></div>{% endwith %}{% endfor %}
+            </div>
+        </div>
+        {% endwith %}
+
+        <!-- OCTOBER -->
+        {% with m=calendar_data.octomber %}
+        <div class="month-row {% if m.current_month %}is-current{% endif %}" data-key="october"
+            onclick="selectMonth('october')">
+            <div class="month-name">October</div>
+            <div class="heat-strip">
+                {% for d in m.days %}{% with
+                t=d.instagram_count|add:d.facebook_count|add:d.tiktok_count|add:d.linkedin_count|add:d.twitter_count %}
+                <div class="hd {% if t == 0 %}h0{% elif t == 1 %}h1{% elif t == 2 %}h2{% elif t == 3 %}h3{% elif t == 4 %}h4{% else %}h5{% endif %} {% if d.is_today %}is-today{% endif %}"
+                    title="Day {{ d.day }} · {{ t }} posts"></div>{% endwith %}{% endfor %}
+            </div>
+        </div>
+        {% endwith %}
+
+        <!-- NOVEMBER -->
+        {% with m=calendar_data.november %}
+        <div class="month-row {% if m.current_month %}is-current{% endif %}" data-key="november"
+            onclick="selectMonth('november')">
+            <div class="month-name">November</div>
+            <div class="heat-strip">
+                {% for d in m.days %}{% with
+                t=d.instagram_count|add:d.facebook_count|add:d.tiktok_count|add:d.linkedin_count|add:d.twitter_count %}
+                <div class="hd {% if t == 0 %}h0{% elif t == 1 %}h1{% elif t == 2 %}h2{% elif t == 3 %}h3{% elif t == 4 %}h4{% else %}h5{% endif %} {% if d.is_today %}is-today{% endif %}"
+                    title="Day {{ d.day }} · {{ t }} posts"></div>{% endwith %}{% endfor %}
+            </div>
+        </div>
+        {% endwith %}
+
+        <!-- DECEMBER -->
+        {% with m=calendar_data.december %}
+        <div class="month-row {% if m.current_month %}is-current{% endif %}" data-key="december"
+            onclick="selectMonth('december')">
+            <div class="month-name">December</div>
+            <div class="heat-strip">
+                {% for d in m.days %}{% with
+                t=d.instagram_count|add:d.facebook_count|add:d.tiktok_count|add:d.linkedin_count|add:d.twitter_count %}
+                <div class="hd {% if t == 0 %}h0{% elif t == 1 %}h1{% elif t == 2 %}h2{% elif t == 3 %}h3{% elif t == 4 %}h4{% else %}h5{% endif %} {% if d.is_today %}is-today{% endif %}"
+                    title="Day {{ d.day }} · {{ t }} posts"></div>{% endwith %}{% endfor %}
+            </div>
+        </div>
+        {% endwith %}
+
+    </div><!-- /year-view -->
+
+    <!-- RIGHT DETAIL PANEL -->
+    <div class="detail-panel">
+
+        <div class="panel-header">
+            <div class="panel-title" id="panel-title">Pick a <strong>month</strong></div>
+            <div class="panel-stats" id="panel-stats"></div>
+        </div>
+
+        <div class="p-tabs" id="p-tabs" style="display:none">
+            <div class="ptab active" onclick="setFilter('all',this)"><i class="bi bi-grid-3x3-gap"></i>All</div>
+            <div class="ptab p-ig" onclick="setFilter('ig',this)"><i class="bi bi-instagram"></i>IG</div>
+            <div class="ptab p-fb" onclick="setFilter('fb',this)"><i class="bi bi-facebook"></i>FB</div>
+            <div class="ptab p-tt" onclick="setFilter('tt',this)"><i class="bi bi-tiktok"></i>TT</div>
+            <div class="ptab p-li" onclick="setFilter('li',this)"><i class="bi bi-linkedin"></i>LI</div>
+            <div class="ptab p-tw" onclick="setFilter('tw',this)"><i class="bi bi-twitter-x"></i>X</div>
+        </div>
+
+        <div class="day-list" id="day-list">
+            <div class="empty-state">
+                <div class="ei">📅</div>
+                <div>Click any month to<br>see its schedule</div>
+            </div>
+        </div>
+
+    </div>
+
+</div><!-- /main -->
+
+<!-- Embed Django data as JSON -->
+<script id="cal-json" type="application/json">
+{
+  "january":   { "name": "January",   "current": {% if calendar_data.january.current_month %}true{% else %}false{% endif %},   "days": [{% for d in calendar_data.january.days %}{"d":{{ d.day }},"iso":"{{ d.isodate }}","ig":{{ d.instagram_count }},"fb":{{ d.facebook_count }},"tt":{{ d.tiktok_count }},"li":{{ d.linkedin_count }},"tw":{{ d.twitter_count }},"today":{% if d.is_today %}true{% else %}false{% endif %}}{% if not forloop.last %},{% endif %}{% endfor %}] },
+  "february":  { "name": "February",  "current": {% if calendar_data.february.current_month %}true{% else %}false{% endif %},  "days": [{% for d in calendar_data.february.days %}{"d":{{ d.day }},"iso":"{{ d.isodate }}","ig":{{ d.instagram_count }},"fb":{{ d.facebook_count }},"tt":{{ d.tiktok_count }},"li":{{ d.linkedin_count }},"tw":{{ d.twitter_count }},"today":{% if d.is_today %}true{% else %}false{% endif %}}{% if not forloop.last %},{% endif %}{% endfor %}] },
+  "march":     { "name": "March",     "current": {% if calendar_data.march.current_month %}true{% else %}false{% endif %},     "days": [{% for d in calendar_data.march.days %}{"d":{{ d.day }},"iso":"{{ d.isodate }}","ig":{{ d.instagram_count }},"fb":{{ d.facebook_count }},"tt":{{ d.tiktok_count }},"li":{{ d.linkedin_count }},"tw":{{ d.twitter_count }},"today":{% if d.is_today %}true{% else %}false{% endif %}}{% if not forloop.last %},{% endif %}{% endfor %}] },
+  "april":     { "name": "April",     "current": {% if calendar_data.april.current_month %}true{% else %}false{% endif %},     "days": [{% for d in calendar_data.april.days %}{"d":{{ d.day }},"iso":"{{ d.isodate }}","ig":{{ d.instagram_count }},"fb":{{ d.facebook_count }},"tt":{{ d.tiktok_count }},"li":{{ d.linkedin_count }},"tw":{{ d.twitter_count }},"today":{% if d.is_today %}true{% else %}false{% endif %}}{% if not forloop.last %},{% endif %}{% endfor %}] },
+  "may":       { "name": "May",       "current": {% if calendar_data.may.current_month %}true{% else %}false{% endif %},       "days": [{% for d in calendar_data.may.days %}{"d":{{ d.day }},"iso":"{{ d.isodate }}","ig":{{ d.instagram_count }},"fb":{{ d.facebook_count }},"tt":{{ d.tiktok_count }},"li":{{ d.linkedin_count }},"tw":{{ d.twitter_count }},"today":{% if d.is_today %}true{% else %}false{% endif %}}{% if not forloop.last %},{% endif %}{% endfor %}] },
+  "june":      { "name": "June",      "current": {% if calendar_data.june.current_month %}true{% else %}false{% endif %},      "days": [{% for d in calendar_data.june.days %}{"d":{{ d.day }},"iso":"{{ d.isodate }}","ig":{{ d.instagram_count }},"fb":{{ d.facebook_count }},"tt":{{ d.tiktok_count }},"li":{{ d.linkedin_count }},"tw":{{ d.twitter_count }},"today":{% if d.is_today %}true{% else %}false{% endif %}}{% if not forloop.last %},{% endif %}{% endfor %}] },
+  "july":      { "name": "July",      "current": {% if calendar_data.july.current_month %}true{% else %}false{% endif %},      "days": [{% for d in calendar_data.july.days %}{"d":{{ d.day }},"iso":"{{ d.isodate }}","ig":{{ d.instagram_count }},"fb":{{ d.facebook_count }},"tt":{{ d.tiktok_count }},"li":{{ d.linkedin_count }},"tw":{{ d.twitter_count }},"today":{% if d.is_today %}true{% else %}false{% endif %}}{% if not forloop.last %},{% endif %}{% endfor %}] },
+  "august":    { "name": "August",    "current": {% if calendar_data.august.current_month %}true{% else %}false{% endif %},    "days": [{% for d in calendar_data.august.days %}{"d":{{ d.day }},"iso":"{{ d.isodate }}","ig":{{ d.instagram_count }},"fb":{{ d.facebook_count }},"tt":{{ d.tiktok_count }},"li":{{ d.linkedin_count }},"tw":{{ d.twitter_count }},"today":{% if d.is_today %}true{% else %}false{% endif %}}{% if not forloop.last %},{% endif %}{% endfor %}] },
+  "september": { "name": "September", "current": {% if calendar_data.september.current_month %}true{% else %}false{% endif %}, "days": [{% for d in calendar_data.september.days %}{"d":{{ d.day }},"iso":"{{ d.isodate }}","ig":{{ d.instagram_count }},"fb":{{ d.facebook_count }},"tt":{{ d.tiktok_count }},"li":{{ d.linkedin_count }},"tw":{{ d.twitter_count }},"today":{% if d.is_today %}true{% else %}false{% endif %}}{% if not forloop.last %},{% endif %}{% endfor %}] },
+  "october":   { "name": "October",   "current": {% if calendar_data.octomber.current_month %}true{% else %}false{% endif %},  "days": [{% for d in calendar_data.octomber.days %}{"d":{{ d.day }},"iso":"{{ d.isodate }}","ig":{{ d.instagram_count }},"fb":{{ d.facebook_count }},"tt":{{ d.tiktok_count }},"li":{{ d.linkedin_count }},"tw":{{ d.twitter_count }},"today":{% if d.is_today %}true{% else %}false{% endif %}}{% if not forloop.last %},{% endif %}{% endfor %}] },
+  "november":  { "name": "November",  "current": {% if calendar_data.november.current_month %}true{% else %}false{% endif %},  "days": [{% for d in calendar_data.november.days %}{"d":{{ d.day }},"iso":"{{ d.isodate }}","ig":{{ d.instagram_count }},"fb":{{ d.facebook_count }},"tt":{{ d.tiktok_count }},"li":{{ d.linkedin_count }},"tw":{{ d.twitter_count }},"today":{% if d.is_today %}true{% else %}false{% endif %}}{% if not forloop.last %},{% endif %}{% endfor %}] },
+  "december":  { "name": "December",  "current": {% if calendar_data.december.current_month %}true{% else %}false{% endif %},  "days": [{% for d in calendar_data.december.days %}{"d":{{ d.day }},"iso":"{{ d.isodate }}","ig":{{ d.instagram_count }},"fb":{{ d.facebook_count }},"tt":{{ d.tiktok_count }},"li":{{ d.linkedin_count }},"tw":{{ d.twitter_count }},"today":{% if d.is_today %}true{% else %}false{% endif %}}{% if not forloop.last %},{% endif %}{% endfor %}] }
+}
+</script>
+
+<script>
+    const CAL = JSON.parse(document.getElementById('cal-json').textContent);
+    let activeMonth = null;
+    let activeFilter = 'all';
+
+    function selectMonth(key) {
+        // Highlight row
+        document.querySelectorAll('.month-row').forEach(r => r.classList.remove('selected'));
+        const row = document.querySelector(`.month-row[data-key="${key}"]`);
+        if (row) row.classList.add('selected');
+
+        activeMonth = key;
+        renderPanel();
+    }
+
+    function setFilter(f, el) {
+        activeFilter = f;
+        document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+        renderPanel();
+    }
+
+    function renderPanel() {
+        const key = activeMonth;
+        const data = CAL[key];
+        if (!data) return;
+
+        // Title
+        document.getElementById('panel-title').innerHTML =
+            `${data.name} <strong>'{{ selected_year }}'</strong>`;
+
+        // Stats
+        let total = 0, active = 0;
+        data.days.forEach(d => {
+            const t = d.ig + d.fb + d.tt + d.li + d.tw;
+            total += t; if (t) active++;
+        });
+
+        document.getElementById('panel-stats').innerHTML = `
+    <div class="ps"><div class="ps-n">${total}</div><div class="ps-l">Posts</div></div>
+    <div class="ps"><div class="ps-n">${active}</div><div class="ps-l">Active days</div></div>
+    <div class="ps"><div class="ps-n">${data.days.length}</div><div class="ps-l">Days</div></div>
+  `;
+
+        // Show tabs
+        document.getElementById('p-tabs').style.display = 'flex';
+
+        // Render day list
+        const list = document.getElementById('day-list');
+        list.innerHTML = '';
+
+        const filterKey = { all: null, ig: 'ig', fb: 'fb', tt: 'tt', li: 'li', tw: 'tw' }[activeFilter];
+
+        data.days.forEach(d => {
+            const total = d.ig + d.fb + d.tt + d.li + d.tw;
+            const filterTotal = filterKey ? d[filterKey] : total;
+            if (filterKey && filterTotal === 0) return; // hide days with 0 for platform filters
+
+            const el = document.createElement('a');
+            el.href = `/schedule/${d.iso}/`;
+            el.className = `de${total > 0 ? ' has-c' : ''}${d.today ? ' is-today' : ''}`;
+
+            const badge = filterKey
+                ? (filterTotal > 0 ? `${filterTotal}` : '0')
+                : (total > 0 ? `${total} post${total !== 1 ? 's' : ''}` : 'no posts');
+
+            el.innerHTML = `
+      <span class="de-num">${String(d.d).padStart(2, '0')}</span>
+      <div class="de-icons">
+        <span class="di ig ${d.ig > 0 ? 'on' : ''}"><i class="bi bi-instagram"></i><sup>${d.ig || ''}</sup></span>
+        <span class="di fb ${d.fb > 0 ? 'on' : ''}"><i class="bi bi-facebook"></i><sup>${d.fb || ''}</sup></span>
+        <span class="di tt ${d.tt > 0 ? 'on' : ''}"><i class="bi bi-tiktok"></i><sup>${d.tt || ''}</sup></span>
+        <span class="di li ${d.li > 0 ? 'on' : ''}"><i class="bi bi-linkedin"></i><sup>${d.li || ''}</sup></span>
+        <span class="di tw ${d.tw > 0 ? 'on' : ''}"><i class="bi bi-twitter-x"></i><sup>${d.tw || ''}</sup></span>
+      </div>
+      <span class="de-badge">${badge}</span>
+    `;
+
+            list.appendChild(el);
+        });
+
+        if (list.children.length === 0) {
+            list.innerHTML = `<div class="empty-state"><div class="ei">✨</div><div>No posts for this platform<br>in ${data.name}</div></div>`;
+        }
+    }
+
+    // Auto-open current month
+    document.addEventListener('DOMContentLoaded', () => {
+        const cur = document.querySelector('.month-row.is-current');
+        if (cur) selectMonth(cur.dataset.key);
+        else selectMonth('january');
+    });
+</script>
+
+{% endblock %}

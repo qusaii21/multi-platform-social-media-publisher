@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page-title %} {{ title }} {% endblock %}
+
+
+{% block body %}
+
+<script>
+    const STORAGE_KEY = '{{ title }}';
+
+    function getStoredChecks() {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+    }
+
+    function saveStoredChecks(state) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function todoCheck(id) {
+        return {
+            id,
+            checked: false,
+            init() {
+                const state = getStoredChecks();
+                this.checked = !!state[this.id];
+            },
+            toggle() {
+                const state = getStoredChecks();
+                state[this.id] = this.checked;
+                saveStoredChecks(state);
+            }
+        }
+    }
+</script>
+
+
+<section class="pf-section">
+
+    <div class="pf-section-header">
+        <h2>{{ title }}</h2>
+        <p>{{ description }}</p>
+    </div>
+
+    <div style="max-width: 800px; margin: 0 auto;">
+        <ol style="padding-left: 1.5rem;">
+            {% for idea in ideas %}
+            <li style="margin-bottom: 0.5rem;">
+                <div class="pf-card-static" style="padding: 0.75rem 1rem;" x-data="todoCheck('{{ idea.id }}')" x-init="init()">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; margin: 0;">
+                        <input type="checkbox" x-model="checked" @change="toggle()" id="{{ idea.id }}" />
+
+                        <template x-if="checked">
+                            <s style="color: var(--pf-text-dim);">{{ idea.text }}</s>
+                        </template>
+
+                        <template x-if="!checked">
+                            <span>{{ idea.text }}</span>
+                        </template>
+                    </label>
+                </div>
+            </li>
+            {% endfor %}
+        </ol>
+    </div>
+
+</section>
+
+
+<section class="pf-cta-section">
+    <h2>Start posting today!</h2>
+
+    <a class="pf-btn pf-btn-primary pf-btn-lg" href="{% url "social:begin" "google-oauth2" %}?next=/">
+        <i class="bi bi-google"></i>
+        Get Started with Google
+    </a>
+
+    <span class="pf-trial-note">
+        ✨ 7-day free trial included
+    </span>
+</section>
+
+
+{% endblock %}

@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page-title %} Integrations {% endblock %}
+
+
+{% block body %}
+
+
+<div class="pf-section" style="padding-top: 1.5rem;">
+
+    <h1 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem;">🔑 Integrations</h1>
+
+    <div x-cloak x-data="{ showFullText: false }" style="margin-bottom: 2rem;">
+        <p @click="showFullText = !showFullText" x-show="!showFullText" style="color: var(--pf-text-muted); font-size: 0.9rem; cursor: pointer;">
+            Authorize PostFlow to post on your behalf.
+            <span style="color: var(--pf-primary);" x-text="showFullText ? '..less' : '..more'"></span>
+        </p>
+        <p @click="showFullText = !showFullText" x-show="showFullText" style="color: var(--pf-text-muted); font-size: 0.9rem; cursor: pointer;">
+            Authorize PostFlow to post on your behalf.
+            For Facebook & Instagram, you need a Facebook public page linked to an Instagram Professional/Business account via Meta Business Suite.
+            For TikTok, you need a business account (you can convert your personal account).
+            For LinkedIn, you need a Company page. For X, no Company or public page needed.
+            <span style="color: var(--pf-primary);" x-text="showFullText ? '..less' : '..more'"></span>
+        </p>
+    </div>
+
+</div>
+
+<div style="max-width: 800px; margin: 0 auto; padding: 0 1rem;">
+
+    <!-- Facebook & Instagram -->
+    <div class="pf-integration-card">
+        <div class="pf-integration-header">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <i style="font-size: 1.75rem;" class="bi bi-facebook"></i>
+
+                {% if facebook_avatar_url and facebook_username %}
+                <div class="pf-platform-info">
+                    <img src="{{ facebook_avatar_url }}" alt="{{ facebook_username }}">
+                    <strong>{{ facebook_username }}</strong>
+                </div>
+                {% endif %}
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-left: 1rem;">
+                <i style="font-size: 1.75rem;" class="bi bi-instagram"></i>
+
+                {% if instagram_avatar_url and instagram_username %}
+                <div class="pf-platform-info">
+                    <img src="{{ instagram_avatar_url }}" alt="{{ instagram_username }}">
+                    <strong>{{ instagram_username }}</strong>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if meta_ok %}
+        <p style="font-size: 0.88rem; color: var(--pf-text-muted);">
+            <span class="pf-status-dot active"></span>
+            Token expires at {{ meta_expire }}, but we can refresh it automatically.
+        </p>
+        {% else %}
+        <p style="font-size: 0.88rem; color: var(--pf-text-muted);">
+            <span class="pf-status-dot inactive"></span>
+            Please click Authorize to allow PostFlow to publish posts on your behalf.
+        </p>
+        {% endif %}
+
+        <div class="pf-integration-actions">
+            {% if meta_ok %}
+            <a href="{% url 'facebook_uninstall' %}" class="pf-btn pf-btn-secondary pf-btn-sm">
+                Deauthorize
+            </a>
+            {% endif %}
+            <a href="{% url 'facebook_login' %}" class="pf-btn {% if meta_ok %}pf-btn-outline{% else %}pf-btn-primary{% endif %} pf-btn-sm">
+                Authorize
+            </a>
+        </div>
+    </div>
+
+
+    <!-- TikTok -->
+    <div class="pf-integration-card">
+        <div class="pf-integration-header">
+            <i style="font-size: 1.75rem;" class="bi bi-tiktok"></i>
+
+            {% if tiktok_avatar_url and tiktok_username %}
+            <div class="pf-platform-info">
+                <img src="{{ tiktok_avatar_url }}" alt="{{ tiktok_username }}">
+                <strong>{{ tiktok_username }}</strong>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if tiktok_ok %}
+        <p style="font-size: 0.88rem; color: var(--pf-text-muted);">
+            <span class="pf-status-dot active"></span>
+            Token expires at {{ tiktok_expire }}, but we can refresh it automatically.
+        </p>
+        {% else %}
+        <p style="font-size: 0.88rem; color: var(--pf-text-muted);">
+            <span class="pf-status-dot inactive"></span>
+            Please click Authorize to allow PostFlow to publish posts on your behalf.
+        </p>
+        {% endif %}
+
+        <div class="pf-integration-actions">
+            {% if tiktok_ok %}
+            <a href="{% url 'tiktok_uninstall' %}" class="pf-btn pf-btn-secondary pf-btn-sm">
+                Deauthorize
+            </a>
+            {% endif %}
+            <a href="{% url 'tiktok_login' %}" class="pf-btn {% if tiktok_ok %}pf-btn-outline{% else %}pf-btn-primary{% endif %} pf-btn-sm">
+                Authorize
+            </a>
+        </div>
+    </div>
+
+
+    <!-- LinkedIn -->
+    <div class="pf-integration-card">
+        <div class="pf-integration-header">
+            <i style="font-size: 1.75rem;" class="bi bi-linkedin"></i>
+
+            {% if linkedin_avatar_url and linkedin_username %}
+            <div class="pf-platform-info">
+                <img src="{{ linkedin_avatar_url }}" alt="{{ linkedin_username }}">
+                <strong>{{ linkedin_username }}</strong>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if linkedin_ok %}
+        <p style="font-size: 0.88rem; color: var(--pf-text-muted);">
+            <span class="pf-status-dot active"></span>
+            Token expires at {{ linkedin_expire }} — make sure to re-authorize before then.
+        </p>
+        {% else %}
+        <p style="font-size: 0.88rem; color: var(--pf-text-muted);">
+            <span class="pf-status-dot inactive"></span>
+            Please click Authorize to allow PostFlow to publish posts on your behalf.
+        </p>
+        {% endif %}
+
+        <div class="pf-integration-actions">
+            {% if linkedin_ok %}
+            <a href="{% url 'linkedin_uninstall' %}" class="pf-btn pf-btn-secondary pf-btn-sm">
+                Deauthorize
+            </a>
+            {% endif %}
+            <a href="{% url 'linkedin_login' %}" class="pf-btn {% if linkedin_ok %}pf-btn-outline{% else %}pf-btn-primary{% endif %} pf-btn-sm">
+                Authorize
+            </a>
+        </div>
+    </div>
+
+
+    <!-- X / Twitter -->
+    <div class="pf-integration-card">
+        <div class="pf-integration-header">
+            <i style="font-size: 1.75rem;" class="bi bi-twitter-x"></i>
+
+            {% if x_avatar_url and x_username %}
+            <div class="pf-platform-info">
+                <img src="{{ x_avatar_url }}" alt="{{ x_username }}">
+                <strong>{{ x_username }}</strong>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if x_ok %}
+        <p style="font-size: 0.88rem; color: var(--pf-text-muted);">
+            <span class="pf-status-dot active"></span>
+            Token expires at {{ x_expire }}, but we can refresh it automatically.
+        </p>
+        {% else %}
+        <p style="font-size: 0.88rem; color: var(--pf-text-muted);">
+            <span class="pf-status-dot inactive"></span>
+            Please click Authorize to allow PostFlow to publish posts on your behalf.
+        </p>
+        {% endif %}
+
+        <div class="pf-integration-actions">
+            {% if x_ok %}
+            <a href="{% url 'x_uninstall' %}" class="pf-btn pf-btn-secondary pf-btn-sm">
+                Deauthorize
+            </a>
+            {% endif %}
+            <a href="{% url 'x_login' %}" class="pf-btn {% if x_ok %}pf-btn-outline{% else %}pf-btn-primary{% endif %} pf-btn-sm">
+                Authorize
+            </a>
+        </div>
+    </div>
+
+</div>
+
+
+{% endblock %}

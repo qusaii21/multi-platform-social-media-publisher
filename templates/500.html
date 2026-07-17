@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page-title %} Server error {% endblock %}
+
+
+{% block body %}
+
+<div class="pf-error-page">
+    <h1>⚠️</h1>
+    <h2>Something went wrong</h2>
+    <p>We're having trouble processing your request. Please try again in a moment.</p>
+    <a class="pf-btn pf-btn-primary" href="/">Go back home</a>
+</div>
+
+{% endblock %}

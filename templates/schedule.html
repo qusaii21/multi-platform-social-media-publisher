@@ -1,0 +1,826 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block page-title %} Schedule posts {% endblock %}
+
+
+{% block body %}
+
+
+<script defer src="{% static 'emoji-mart.js' %}"></script>
+
+
+<div class="container pf-schedule-nav">
+
+    <a href="{% url 'calendar' %}?year={{ year }}">
+        <i class="bi bi-arrow-left"></i>
+        Back to Calendar
+    </a>
+
+    <div style="display: flex; gap: 0.25rem;">
+        <a href="{% url 'schedule_form' isodate=prev_date %}">
+            <i class="bi bi-chevron-left"></i>
+        </a>
+        <a href="{% url 'schedule_form' isodate=today %}" style="font-weight: 600;">
+            Today
+        </a>
+        <a href="{% url 'schedule_form' isodate=next_date %}">
+            <i class="bi bi-chevron-right"></i>
+        </a>
+    </div>
+
+</div>
+
+
+<p class="pf-date-display">
+    {{ current_date }} <sup>{{ posts|length }} posts</sup>
+</p>
+
+
+{% if show_form %}
+
+
+<div x-data="showPreview" class="container-fluid grid mt-2 two-panel" style="position: relative;">
+
+    <article class="pf-form-panel">
+
+        <div class="pf-section-label">Compose Post</div>
+
+        <form x-data="formData" x-on:submit="loading = true" action="{% url 'schedule_save' isodate=isodate %}"
+            method="POST" enctype="multipart/form-data">
+
+            {% csrf_token %}
+
+            <div style="margin-bottom: 1.5rem; display: flex; gap: 0.75rem; flex-wrap: wrap;">
+
+                {% if integrations_info.facebook_ok %}
+                <label for="{{ post_form.post_on_facebook.id_for_label }}" class="social-checkbox-label">
+
+                    <div class="font-size-xs">
+                        <i class="bi bi-facebook"></i>
+                        <strong>Facebook</strong>
+                    </div>
+
+                    <input type="checkbox" hidden name="{{ post_form.post_on_facebook.name }}"
+                        id="{{ post_form.post_on_facebook.auto_id }}">
+
+                    <div class="social-checkbox-figure">
+                        <figure style="position: relative;">
+                            <img src="{{ integrations_info.facebook_avatar_url }}"
+                                alt="{{ integrations_info.facebook_username }}" class="avatar">
+                        </figure>
+                        <strong class="font-size-s">{{ integrations_info.facebook_username }}</strong>
+                    </div>
+
+                    {{ post_form.post_on_facebook.errors }}
+
+                </label>
+
+                {% else %}
+                <a href="{% url 'facebook_login' %}" data-tooltip="Grant access">
+                    <label class="social-checkbox-label">
+                        <div class="font-size-xs" style="color: var(--pf-text-dim);">
+                            <i class="bi bi-facebook"></i>
+                            <strong>Facebook</strong>
+                        </div>
+
+                        <div class="social-checkbox-figure">
+                            <figure style="position: relative;">
+                                <i class="bi bi-person-fill-lock" style="color: var(--pf-text-dim);"></i>
+                            </figure>
+                            <strong class="font-size-s">Username</strong>
+                        </div>
+                    </label>
+                </a>
+                {% endif %}
+
+
+                {% if integrations_info.instagram_ok %}
+
+                <label for="{{ post_form.post_on_instagram.id_for_label }}" class="social-checkbox-label">
+
+                    <div class="font-size-xs">
+                        <i class="bi bi-instagram"></i>
+                        <strong>Instagram</strong>
+                    </div>
+
+                    <input type="checkbox" hidden name="{{ post_form.post_on_instagram.name }}"
+                        id="{{ post_form.post_on_instagram.auto_id }}">
+
+                    <div class="social-checkbox-figure">
+                        <figure style="position: relative;">
+                            <img src="{{ integrations_info.instagram_avatar_url }}"
+                                alt="{{ integrations_info.instagram_username }}" class="avatar">
+                        </figure>
+                        <strong class="font-size-s">{{ integrations_info.instagram_username }}</strong>
+                    </div>
+
+                    {{ post_form.post_on_instagram.errors }}
+
+                </label>
+
+                {% else %}
+                <a href="{% url 'facebook_login' %}" data-tooltip="Grant access">
+                    <label class="social-checkbox-label">
+                        <div class="font-size-xs" style="color: var(--pf-text-dim);">
+                            <i class="bi bi-instagram"></i>
+                            <strong>Instagram</strong>
+                        </div>
+
+                        <div class="social-checkbox-figure">
+                            <figure style="position: relative;">
+                                <i class="bi bi-person-fill-lock" style="color: var(--pf-text-dim);"></i>
+                            </figure>
+                            <strong class="font-size-s">Username</strong>
+                        </div>
+                    </label>
+                </a>
+                {% endif %}
+
+
+                {% if integrations_info.tiktok_ok %}
+
+                <label for="{{ post_form.post_on_tiktok.id_for_label }}" class="social-checkbox-label">
+
+                    <div class="font-size-xs">
+                        <i class="bi bi-tiktok"></i>
+                        <strong>TikTok</strong>
+                    </div>
+
+                    <input type="checkbox" x-model="showTikTokForm" hidden name="{{ post_form.post_on_tiktok.name }}"
+                        id="{{ post_form.post_on_tiktok.auto_id }}">
+
+                    <div class="social-checkbox-figure">
+                        <figure style="position: relative;">
+                            <img src="{{ integrations_info.tiktok_avatar_url }}"
+                                alt="{{ integrations_info.tiktok_username }}" class="avatar">
+                        </figure>
+                        <strong class="font-size-s">{{ integrations_info.tiktok_username }}</strong>
+                    </div>
+
+                    {{ post_form.post_on_tiktok.errors }}
+
+                </label>
+
+                {% else %}
+                <a href="{% url 'tiktok_login' %}" data-tooltip="Grant access">
+                    <label class="social-checkbox-label">
+                        <div class="font-size-xs" style="color: var(--pf-text-dim);">
+                            <i class="bi bi-tiktok"></i>
+                            <strong>TikTok</strong>
+                        </div>
+
+                        <div class="social-checkbox-figure">
+                            <figure style="position: relative;">
+                                <i class="bi bi-person-fill-lock" style="color: var(--pf-text-dim);"></i>
+                            </figure>
+                            <strong class="font-size-s">Username</strong>
+                        </div>
+                    </label>
+                </a>
+                {% endif %}
+
+
+                {% if integrations_info.x_ok %}
+
+                <label for="{{ post_form.post_on_x.id_for_label }}" class="social-checkbox-label">
+
+                    <div class="font-size-xs">
+                        <i class="bi bi-twitter-x"></i>
+                        <strong>X</strong>
+                    </div>
+
+                    <input type="checkbox" hidden name="{{ post_form.post_on_x.name }}"
+                        id="{{ post_form.post_on_x.auto_id }}">
+
+                    <div class="social-checkbox-figure">
+                        <figure style="position: relative;">
+                            <img src="{{ integrations_info.x_avatar_url }}" alt="{{ integrations_info.x_username }}"
+                                class="avatar">
+                        </figure>
+                        <strong class="font-size-s">{{ integrations_info.x_username }}</strong>
+                    </div>
+
+                    {{ post_form.post_on_x.errors }}
+
+                </label>
+
+                {% else %}
+                <a href="{% url 'x_login' %}" data-tooltip="Grant access">
+                    <label class="social-checkbox-label">
+                        <div class="font-size-xs" style="color: var(--pf-text-dim);">
+                            <i class="bi bi-twitter-x"></i>
+                            <strong>X</strong>
+                        </div>
+
+                        <div class="social-checkbox-figure">
+                            <figure style="position: relative;">
+                                <i class="bi bi-person-fill-lock" style="color: var(--pf-text-dim);"></i>
+                            </figure>
+                            <strong class="font-size-s">Username</strong>
+                        </div>
+                    </label>
+                </a>
+                {% endif %}
+
+
+                {% if integrations_info.linkedin_ok %}
+                <label for="{{ post_form.post_on_linkedin.id_for_label }}" class="social-checkbox-label">
+
+                    <div class="font-size-xs">
+                        <i class="bi bi-linkedin"></i>
+                        <strong>LinkedIn</strong>
+                    </div>
+
+                    <input type="checkbox" hidden name="{{ post_form.post_on_linkedin.name }}"
+                        id="{{ post_form.post_on_linkedin.auto_id }}">
+
+                    <div class="social-checkbox-figure">
+                        <figure style="position: relative;">
+                            <img src="{{ integrations_info.linkedin_avatar_url }}"
+                                alt="{{ integrations_info.linkedin_username }}" class="avatar">
+                        </figure>
+                        <strong class="font-size-s">{{ integrations_info.linkedin_username }}</strong>
+                    </div>
+
+                    {{ post_form.post_on_linkedin.errors }}
+
+                </label>
+                {% else %}
+                <a href="{% url 'linkedin_login' %}" data-tooltip="Grant access">
+                    <label class="social-checkbox-label">
+                        <div class="font-size-xs" style="color: var(--pf-text-dim);">
+                            <i class="bi bi-linkedin"></i>
+                            <strong>LinkedIn</strong>
+                        </div>
+
+                        <div class="social-checkbox-figure">
+                            <figure style="position: relative;">
+                                <i class="bi bi-person-fill-lock" style="color: var(--pf-text-dim);"></i>
+                            </figure>
+                            <strong class="font-size-s">Username</strong>
+                        </div>
+                    </label>
+                </a>
+                {% endif %}
+
+            </div>
+
+            <div style="display: flex; align-items: center; flex-wrap: wrap; margin-bottom: 1.5rem; gap: 1rem;">
+
+                <div x-data="timePicker()">
+
+                    <label style="display: none;" for="{{ post_form.scheduled_on.id_for_label }}">
+                        Schedule on:
+                        {{ post_form.scheduled_on }}
+                        {{ post_form.scheduled_on.errors }}
+                    </label>
+
+                    <label style="max-width: fit-content;" for="id_scheduled_on_time">
+                        At time:
+                        <input type="time" id="id_scheduled_on_time" x-model="timeValue"
+                            @input="updateDatetime($event.target.value)">
+                    </label>
+                </div>
+
+                <label style="display: none;" for="{{ post_form.post_timezone.id_for_label }}">
+                    Timezone:
+                    {{ post_form.post_timezone }}
+                    {{ post_form.post_timezone.errors }}
+                </label>
+
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+
+                    <label for="{{ post_form.process_image.id_for_label }}" data-tooltip="Process image">
+                        <i class="bi bi-camera-fill"></i>
+                        {{ post_form.process_image }}
+                        {{ post_form.process_image.errors }}
+                    </label>
+
+                    <label for="{{ post_form.process_video.id_for_label }}" data-tooltip="Process video">
+                        <i class="bi bi-camera-reels-fill"></i>
+                        {{ post_form.process_video }}
+                        {{ post_form.process_video.errors }}
+                    </label>
+
+                </div>
+
+                <div style="display: flex; flex-direction: column; font-size: 12px;">
+                    <small style="color: var(--pf-text-dim);">
+                        <i class="bi bi-camera-fill"></i>
+                        Process image — ensures correct size (1080×1350px). Text-only posts get auto-generated images.
+                    </small>
+                    <small style="color: var(--pf-text-dim);">
+                        <i class="bi bi-camera-reels-fill"></i>
+                        Process video — ensures 9:16 ratio (1080×1920px, max 90s).
+                    </small>
+                </div>
+
+            </div>
+
+            <div x-data="emojiPicker">
+
+                <label for="{{ post_form.description.id_for_label }}">
+                    Title/Post/Caption:
+                    <textarea x-model="postText" x-data x-grow @input="countLength"
+                        name="{{ post_form.description.name }}" cols="40" rows="3" maxlength="63207" required
+                        id="{{ post_form.description.id_for_label }}">{% if post_form.description.value %}{{ post_form.description.value }}{% endif %}</textarea>
+                    {{ post_form.description.errors }}
+                    <div style="display: flex; justify-content: end; margin-top: -18px;">
+                        <small style="color: var(--pf-text-dim);" x-text="postLength"></small>
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                        <small x-text="xfreelenerr" style="color: var(--pf-warning);"></small>
+                        <small x-text="instagramlenerr" style="color: var(--pf-warning);"></small>
+                        <small x-text="linkedinlenerr" style="color: var(--pf-warning);"></small>
+                        <small x-text="xbluelenerr" style="color: var(--pf-warning);"></small>
+                        <small x-text="facebooklenerr" style="color: var(--pf-warning);"></small>
+                    </div>
+                </label>
+
+                <div x-data="{ isVisible: window.innerWidth >= 758 }"
+                    x-init="window.addEventListener('resize', () => isVisible = window.innerWidth >= 758)">
+                    <template x-if="isVisible">
+                        <div style="display: flex; justify-content: right; position: relative;">
+                            <div style="position: absolute; top: -10rem; right: 4rem;" id="emoji"
+                                x-show="showEmojiPicker" @click.away="showEmojiPicker = false">
+                            </div>
+
+                            <button style="all: unset; padding: 10px; color: var(--pf-text-dim); cursor: pointer;"
+                                class="outline" type="button" @click="togglePicker">
+                                <i class="bi bi-emoji-smile"></i>
+                            </button>
+                        </div>
+                    </template>
+                </div>
+
+            </div>
+
+
+            <div>
+                <label for="{{ post_form.media_file.id_for_label }}">
+                    <input type="file" name="media_file" id="{{ post_form.media_file.auto_id }}"
+                        @change="handleFileChange">
+                    {{ post_form.media_file.errors }}
+                </label>
+            </div>
+
+            <div x-show="showTikTokForm" id="tiktok-form" style="margin-bottom: 2rem;">
+
+                <div class="pf-section-label" style="margin-top: 1.5rem;">TikTok Settings</div>
+
+                {{ post_form.tiktok_nickname.as_hidden }}
+                {{ post_form.tiktok_max_video_post_duration_sec.as_hidden }}
+
+                <div
+                    style="display: flex; flex-wrap: wrap; align-items: center; gap: 1.5rem; margin-top: 1rem; margin-bottom: 1.5rem;">
+
+                    <label for="{{ post_form.tiktok_privacy_level_options.id_for_label }}">
+                        Who can view this video?
+                        <input type="hidden" name="{{ post_form.tiktok_privacy_level_options.name }}"
+                            x-model="privacyLevel" id="{{ post_form.tiktok_privacy_level_options.auto_id }}">
+
+                        <details class="dropdown" x-data="{ open: false }" :open="open" @click.outside="open = false" style="min-width: max-content;">
+
+                            <summary @click.prevent="open = !open" role="button" class="outline">
+                                <span x-text="privacyLevel ? privacyLabels[privacyLevel] : '------------------'"></span>
+                            </summary>
+
+                            <ul role="listbox">
+
+                                <li>
+                                    <a href="#" @click.prevent="privacyLevel = 'FOLLOWER_OF_CREATOR'; open = false">
+                                        Followers of Creator
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" @click.prevent="privacyLevel = 'PUBLIC_TO_EVERYONE'; open = false">
+                                        Public to Everyone
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" @click.prevent="privacyLevel = 'MUTUAL_FOLLOW_FRIENDS'; open = false">
+                                        Mutual Follow Friends
+                                    </a>
+                                </li>
+
+                                <li x-data="{ isHovering: false }"
+                                    @mouseenter="isHovering = true"
+                                    @mouseleave="isHovering = false"
+                                    style="position: relative;">
+
+                                    <div x-show="isHovering && brandedContent"
+                                        x-transition
+                                        style="
+                                            position: absolute;
+                                            top: 50%;
+                                            right: 0;
+                                            transform: translate(calc(100% + 10px), -50%);
+                                            background: var(--pf-surface-solid);
+                                            color: var(--pf-error);
+                                            padding: 15px 20px;
+                                            border-radius: var(--pf-radius);
+                                            font-size: 0.85rem;
+                                            white-space: nowrap;
+                                            z-index: 1000;
+                                            pointer-events: none;
+                                            border: 1px solid var(--pf-surface-border);
+                                        ">
+                                        Branded content visibility cannot be set to private.
+                                    </div>
+
+                                    <a href="#"
+                                    x-ref="selfOnlyLink"
+                                    @click.prevent="if(!brandedContent) { privacyLevel = 'SELF_ONLY'; open = false; }"
+                                    :class="brandedContent ? '' : ''"
+                                    :style="brandedContent ? 'color: var(--pf-text-dim); cursor: not-allowed;' : ''">
+                                    Self Only
+                                    </a>
+                                </li>
+
+                            </ul>
+                        </details>
+                        {{ post_form.tiktok_privacy_level_options.errors }}
+                    </label>
+
+                    <div>
+                        <legend>Generated with AI?</legend>
+                        {{ post_form.tiktok_ai_generated }}
+                        {{ post_form.tiktok_ai_generated.errors }}
+                        <label for="{{ post_form.tiktok_.ai_generated.id_for_label }}">Yes.</label>
+                    </div>
+
+                </div>
+
+                <fieldset>
+                    <legend>Allow users to</legend>
+
+                    {{ post_form.tiktok_allow_comment }}
+                    {{ post_form.tiktok_allow_comment.errors }}
+                    <label for="{{ post_form.tiktok_allow_comment.id_for_label }}">Comment</label>
+
+                    {{ post_form.tiktok_allow_duet }}
+                    {{ post_form.tiktok_allow_duet.errors }}
+                    <label for="{{ post_form.tiktok_allow_duet.id_for_label }}">Duet</label>
+
+                    {{ post_form.tiktok_allow_stitch }}
+                    {{ post_form.tiktok_allow_stitch.errors }}
+                    <label for="{{ post_form.tiktok_allow_stitch.id_for_label }}">Stitch</label>
+
+                </fieldset>
+
+
+
+                <div class="mt-4">
+
+                    <div>
+                        <label for="{{ post_form.tiktok_disclose_video_content.id_for_label }}">
+                            <input @click="setDisclose" x-model="disclose" type="checkbox" role="switch"
+                                name="{{ post_form.tiktok_disclose_video_content.name }}"
+                                id="{{ post_form.tiktok_disclose_video_content.id_for_label }}">
+                            Disclose video content
+                        </label>
+                        <p>
+                            {{ post_form.tiktok_disclose_video_content.errors }}
+                        </p>
+                        <small style="color: var(--pf-text-dim);">
+                            Turn on to disclose that this video promotes goods or services
+                            in exchange for something of value.
+                            Your video could promote yourself, a third party, or both.
+                        </small>
+                    </div>
+
+                    <div x-show="disclose">
+
+                        <fieldset class="grid" style="margin-top: 1.5rem;">
+
+                            <div>
+                                <label for="{{ post_form.tiktok_your_brand.id_for_label }}">
+                                    <input x-model="yourBrand" type="checkbox"
+                                        name="{{ post_form.tiktok_your_brand.name }}"
+                                        id="{{ post_form.tiktok_your_brand.id_for_label }}">
+                                    {{ post_form.tiktok_your_brand.errors }}
+                                    Your Brand
+                                </label>
+                                <small style="color: var(--pf-text-dim);">
+                                    You are promoting yourself or your own business.
+                                    This video will be classified as Brand Organic.
+                                </small>
+                            </div>
+
+                            <div>
+                                <label for="{{ post_form.tiktok_branded_content.id_for_label }}">
+                                    <input x-model="brandedContent" type="checkbox"
+                                        :disabled="privacyLevel == 'SELF_ONLY'"
+                                        name="{{ post_form.tiktok_branded_content.name }}"
+                                        id="{{ post_form.tiktok_branded_content.id_for_label }}">
+                                    {{ post_form.tiktok_branded_content.errors }}
+                                    Branded Content
+                                </label>
+
+                                <small style="color: var(--pf-text-dim);">
+                                    You are promoting another brand or third party.
+                                    This video will be classified as Branded Content.
+                                </small>
+                            </div>
+
+                        </fieldset>
+
+
+                        <div class="grid">
+
+                            <blockquote x-show="yourBrand && !brandedContent">
+                                ℹ️ Your photo/video will be labeled as 'Promotional content'
+                            </blockquote>
+
+                            <blockquote x-show="brandedContent">
+                                ℹ️ Your photo/video will be labeled as 'Paid partnership'
+                            </blockquote>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="mt-2">
+                        <p x-show="!brandedContent">
+                            By posting, you agree to TikTok's <a target="_blank"
+                                href="https://www.tiktok.com/legal/page/global/music-usage-confirmation/en">
+                                Music Usage Confirmation
+                            </a>
+                        </p>
+
+                        <p x-show="brandedContent">
+                            By posting, you agree to TikTok's
+                            <a target="_blank" href="https://www.tiktok.com/legal/page/global/bc-policy/en">
+                                Branded Content Policy
+                            </a>
+                            and
+                            <a target="_blank"
+                                href="https://www.tiktok.com/legal/page/global/music-usage-confirmation/en">
+                                Music Usage Confirmation
+                            </a>
+                            .
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <button type="submit" class="pf-btn pf-btn-primary" style="width: 100%;"
+                x-bind:disabled="loading || (showTikTokForm && disclose && !(yourBrand || brandedContent)) || (showTikTokForm && privacyLevel == '')">
+                <i class="bi bi-save"></i>
+                <span>Schedule post</span>
+            </button>
+
+            <div style="display: flex; flex-direction: column; flex-wrap: wrap; margin-top: 0.5rem;">
+
+                <small x-show="showTikTokForm && disclose && !(yourBrand || brandedContent)"
+                    style="color: var(--pf-warning);">You need to indicate if your content promotes yourself, a third party,
+                    or both.</small>
+
+                <small x-show="loading" aria-busy="true">Saving post...</small>
+            </div>
+
+        </form>
+
+    </article>
+
+    <article class="pf-preview-panel">
+
+        <div class="pf-section-label">Preview</div>
+
+        <p x-text="postText" class="whitespace-pre-line" style="font-size: 0.92rem; line-height: 1.6;"></p>
+
+        <template x-if="mediaType === 'image'">
+            <div x-data="{fullScreen: false}" style="display: flex; justify-content: center;">
+                <div x-show="!fullScreen">
+                    <img @click="fullScreen = true" :src="mediaUrl" alt="Media file"
+                        style="max-width: 100%; height: 350px; object-fit: contain; margin-bottom: 1rem; margin-top: 1rem; border-radius: var(--pf-radius);">
+                </div>
+
+                <dialog :open="fullScreen" @click="fullScreen = false">
+                    <img :src="mediaUrl" alt="Media file"
+                        style="max-width: 100%; height: 100%; object-fit: contain; margin-bottom: 1rem; margin-top: 1rem; border-radius: var(--pf-radius);">
+                </dialog>
+            </div>
+        </template>
+
+        <template x-if="mediaType === 'video'">
+            <div x-data="{fullScreen: false}" style="display: flex; justify-content: center;">
+                <div x-show="!fullScreen">
+                    <video @click="fullScreen = true" controls
+                        style="max-width: 100%; height: 350px; object-fit: contain; margin-bottom: 1rem; margin-top: 1rem; border-radius: var(--pf-radius);">
+                        <source :src="mediaUrl" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+
+                <dialog :open="fullScreen" @click="fullScreen = false">
+                    <video controls
+                        style="max-width: 100%; height: 100%; object-fit: contain; margin-bottom: 1rem; margin-top: 1rem; border-radius: var(--pf-radius);">
+                        <source :src="mediaUrl" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </dialog>
+            </div>
+        </template>
+
+    </article>
+
+</div>
+
+{% else %}
+
+{% if not posts %}
+<p style="text-align: center; margin-top: 4rem; color: var(--pf-text-dim);">No posts on this past date.</p>
+{% endif %}
+
+{% endif %}
+
+
+{% include 'components/posts.html' with posts=posts %}
+
+
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const timezoneInput = document.getElementById("id_post_timezone");
+        if (timezoneInput && !timezoneInput.value) {
+            timezoneInput.value = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        }
+    });
+
+    function timePicker() {
+        return {
+            timeValue: '',
+
+            init() {
+                const now = new Date();
+                now.setHours(now.getHours() + 1);
+                this.timeValue = now.toTimeString().substring(0, 5);
+                this.updateDatetime(this.timeValue);
+            },
+
+            updateDatetime(time) {
+                const datetimeInput = document.getElementById('{{ post_form.scheduled_on.id_for_label }}');
+                if (!datetimeInput) return;
+
+                let datePart;
+                if (datetimeInput.value) {
+                    datePart = datetimeInput.value.split('T')[0];
+                } else {
+                    const today = new Date();
+                    datePart = today.toISOString().split('T')[0];
+                }
+                datetimeInput.value = `${datePart}T${time}`;
+            }
+        };
+    }
+
+
+    function emojiPicker() {
+        let activeInput = null;
+
+        return {
+            getTheme() {
+                return localStorage.getItem('theme');
+            },
+            showEmojiPicker: false,
+            togglePicker() {
+                this.showEmojiPicker = !this.showEmojiPicker;
+                if (!document.getElementById('picker')) {
+                    const pickerOptions = {
+                        theme: this.getTheme(),
+                        onEmojiSelect: (emoji) => {
+                            if (activeInput) {
+                                activeInput.value += emoji.native;
+                            }
+                        }
+                    };
+                    const picker = new EmojiMart.Picker(pickerOptions);
+                    picker.id = 'picker';
+                    const emojiEl = document.getElementById("emoji");
+                    emojiEl.appendChild(picker);
+                }
+            },
+            init() {
+                document.addEventListener('focusin', (event) => {
+                    if (event.target.tagName === 'TEXTAREA' || event.target.tagName === 'INPUT') {
+                        activeInput = event.target;
+                    } else {
+                        activeInput = document.getElementById("id_description");
+                    }
+                });
+            }
+        };
+    }
+
+    function formData() {
+
+        const text_max_length = {
+            "X_free": 280,
+            "X_blue": 4000,
+            "instagram": 2200,
+            "facebook": 63206,
+            "linkedin": 3000,
+        }
+
+        return {
+            loading: false,
+            postLength: 0,
+            xfreelenerr: "",
+            xbluelenerr: "",
+            instagramlenerr: "",
+            facebooklenerr: "",
+            linkedinlenerr: "",
+            countLength: function (event) {
+                this.postLength = event.target.value.length;
+
+                if (this.postLength >= text_max_length.X_free) {
+                    this.xfreelenerr = `X Free ${text_max_length.X_free} allowed characters reached`;
+                } else {
+                    this.xfreelenerr = "";
+                }
+
+                if (this.postLength >= text_max_length.X_blue) {
+                    this.xbluelenerr = `X Blue ${text_max_length.X_blue} allowed characters reached`;
+                } else {
+                    this.xbluelenerr = "";
+                }
+
+                if (this.postLength >= text_max_length.instagram) {
+                    this.instagramlenerr = `Instagram ${text_max_length.instagram} allowed characters reached`;
+                } else {
+                    this.instagramlenerr = "";
+                }
+
+                if (this.postLength >= text_max_length.facebook) {
+                    this.facebooklenerr = `Facebook ${text_max_length.facebook} allowed characters reached`;
+                } else {
+                    this.facebooklenerr = "";
+                }
+
+                if (this.postLength >= text_max_length.linkedin) {
+                    this.linkedinlenerr = `Linkedin ${text_max_length.linkedin} allowed characters reached`;
+                } else {
+                    this.linkedinlenerr = "";
+                }
+
+            },
+            showTikTokForm: false,
+            disclose: false,
+            brandedContent: false,
+            yourBrand: false,
+            privacyLevel: "",
+            privacyLabels: {
+                "FOLLOWER_OF_CREATOR": "Followers of Creator",
+                "PUBLIC_TO_EVERYONE": "Public to Everyone",
+                "MUTUAL_FOLLOW_FRIENDS": "Mutual Follow Friends",
+                "SELF_ONLY": "Self Only"
+            },
+            setDisclose: function () {
+                this.disclose = !this.disclose;
+
+                if (!this.disclose) {
+                    this.brandedContent = false;
+                    this.yourBrand = false;
+                }
+
+                if (this.privacyLevel === 'SELF_ONLY' && this.disclose === true) {
+                    this.privacyLevel = "";
+                }
+
+            }
+        }
+    }
+
+    function showPreview() {
+        return {
+            postText: "",
+            mediaUrl: null,
+            mediaType: null,
+
+            handleFileChange(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                this.mediaUrl = URL.createObjectURL(file);
+
+                if (file.type.startsWith("image/")) {
+                    this.mediaType = "image";
+                } else if (file.type.startsWith("video/")) {
+                    this.mediaType = "video";
+                } else {
+                    this.mediaType = null;
+                }
+            }
+        }
+    }
+
+</script>
+
+
+
+{% endblock %}
