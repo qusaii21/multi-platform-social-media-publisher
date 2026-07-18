@@ -183,5 +183,5 @@ def make_image_postable(image_path: str = None, text: str = None):
         return created_image_path
     except Exception as err:
         log.exception(err)
-        send_notification(email="ImPosting", message=str(err))
+        send_notification(email="SocialScheduler", message=str(err))
         return image_path

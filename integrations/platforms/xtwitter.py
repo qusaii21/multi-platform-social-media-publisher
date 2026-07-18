@@ -190,7 +190,7 @@ async def post_on_x(
             log.error(f"X post error: {integration.account_id} {err}")
             log.exception(err)
             send_notification(
-                "ImPosting", f"AccountId: {integration.account_id} got error {err}"
+                "SocialScheduler", f"AccountId: {integration.account_id} got error {err}"
             )
     else:
         err = "(Re-)Authorize X on Integrations page"

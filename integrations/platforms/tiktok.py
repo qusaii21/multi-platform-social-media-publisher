@@ -338,7 +338,7 @@ async def post_on_tiktok(
             log.error(f"TikTok post error: {integration.account_id} {err}")
             log.exception(err)
             send_notification(
-                "ImPosting", f"AccountId: {integration.account_id} got error {err}"
+                "SocialScheduler", f"AccountId: {integration.account_id} got error {err}"
             )
     else:
         err = "(Re-)Authorize TikTok on Integrations page"

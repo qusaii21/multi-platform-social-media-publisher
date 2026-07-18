@@ -49,7 +49,7 @@ def refresh_access_token_for_x(integration: IntegrationsModel):
         log.error(f"Token refresh failed for account {integration.account_id}")
         log.exception(e)
         send_notification(
-            "ImPosting",
+            "SocialScheduler",
             f"Token refresh failed for X account {integration.account_id}: {str(e)}",
         )
         integration.delete()
@@ -62,7 +62,7 @@ def refresh_access_token_for_linkedin(integration: IntegrationsModel):
         integration.delete()
 
         send_notification(
-            "ImPosting",
+            "SocialScheduler",
             f"LinkedIn access token expired for account {integration.account_id}.",
         )
         return
@@ -124,7 +124,7 @@ def refresh_access_token_for_facebook(integration: IntegrationsModel):
         log.exception(e)
 
         send_notification(
-            "ImPosting",
+            "SocialScheduler",
             f"Facebook token refresh failed for account {integration.account_id}: {str(e)}",
         )
 
@@ -182,7 +182,7 @@ def refresh_access_token_for_tiktok(integration: IntegrationsModel):
         log.exception(e)
 
         send_notification(
-            "ImPosting",
+            "SocialScheduler",
             f"TikTok token refresh failed for account {integration.account_id}: {str(e)}",
         )
 
@@ -213,4 +213,4 @@ def refresh_tokens():
 
     except Exception as err:
         log.exception(err)
-        send_notification("ImPosting", f"Could not refresh tokens because {err}")
+        send_notification("SocialScheduler", f"Could not refresh tokens because {err}")

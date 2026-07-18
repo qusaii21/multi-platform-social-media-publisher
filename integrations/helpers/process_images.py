@@ -47,8 +47,8 @@ def process_images():
                 
             except Exception as err:
                 log.exception(err)
-                send_notification("ImPosting", f"Got error on processing image {err}")
+                send_notification("SocialScheduler", f"Got error on processing image {err}")
 
     except Exception as err:
         log.exception(err)
-        send_notification("ImPosting", f"Got error on processing images {err}")
+        send_notification("SocialScheduler", f"Got error on processing images {err}")

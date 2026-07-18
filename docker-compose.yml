@@ -1,7 +1,7 @@
 services:
 
-  imposting-web:
-    container_name: imposting-web
+  scheduler-web:
+    container_name: scheduler-web
     build: .
     command: uv run waitress-serve --threads 6 --listen=*:8000 core.wsgi:application
     restart: unless-stopped
@@ -26,8 +26,8 @@ services:
     networks:
       - web
 
-  imposting-cron-poster:
-    container_name: imposting-cron-poster
+  scheduler-cron-poster:
+    container_name: scheduler-cron-poster
     build: .
     command: python manage.py runposter
     restart: unless-stopped

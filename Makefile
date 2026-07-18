@@ -59,10 +59,10 @@ build:
 	docker compose -p app -f docker-compose.yml build
 
 applogs:
-	docker compose -p app -f docker-compose.yml logs imposting-web imposting-cron-poster -ft
+	docker compose -p app -f docker-compose.yml logs scheduler-web scheduler-cron-poster -ft
 
 proxylogs:
 	docker compose -p proxy -f docker-compose.proxy.yml logs external-caddy-proxy -ft
 
 appexec:
-	docker compose -p app -f docker-compose.yml exec imposting-web bash
+	docker compose -p app -f docker-compose.yml exec scheduler-web bash

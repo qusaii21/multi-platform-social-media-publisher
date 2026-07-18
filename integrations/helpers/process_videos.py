@@ -57,9 +57,9 @@ def process_videos():
                 
             except Exception as err:
                 log.exception(err)
-                send_notification("ImPosting", f"Got error on processing video {err}")
+                send_notification("SocialScheduler", f"Got error on processing video {err}")
 
     except Exception as err:
         log.exception(err)
-        send_notification("ImPosting", f"Got error on processing videos {err}")
+        send_notification("SocialScheduler", f"Got error on processing videos {err}")
 

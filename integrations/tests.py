@@ -117,8 +117,8 @@ class TestPostingOnSocials(TestCase):
         poster = FacebookPoster(integration)
 
         post_text = "Test"
-        media_path = "./static/imposting-video-reel.mp4"
-        # media_path = "/home/alinclimente/Videos/test-reel.mp4"
+        media_path = "./static/sample-video-reel.mp4"
+        # media_path = "./Videos/test-reel.mp4"
 
         post_url = poster.make_post(post_text, media_type="VIDEO", media_path=media_path)
 
@@ -141,8 +141,8 @@ class TestPostingOnSocials(TestCase):
         poster = InstagramPoster(integration)
 
         post_text = "Test"
-        media_path = "./static/imposting-video-reel.mp4"
-        media_url = settings.APP_URL + "/static/imposting-video-reel.mp4"
+        media_path = "./static/sample-video-reel.mp4"
+        media_url = settings.APP_URL + "/static/sample-video-reel.mp4"
 
         post_url = poster.make_post(post_text, media_url, media_path)
 
@@ -186,7 +186,7 @@ class TestPostingOnSocials(TestCase):
         poster = TikTokPoster(integration)
 
         post_text = "Test"
-        media_path = "./static/imposting-video-reel-tiktok.mp4"
+        media_path = "./static/sample-video-reel-tiktok.mp4"
 
 
         # video_duration = poster.get_video_duration(media_path)
@@ -217,8 +217,8 @@ class TestPostingOnSocials(TestCase):
     def test_make_video_postable(self):
         # uv run python manage.py test integrations.tests.TestPostingOnSocials.test_make_video_postable
 
-        video_path = "./static/imposting-video.mp4"
-        output_path = "./static/imposting-video-common.mp4"
+        video_path = "./static/sample-video.mp4"
+        output_path = "./static/sample-video-common.mp4"
 
         make_video_postable(video_path, output_path)
 
@@ -316,8 +316,8 @@ class TestPostingOnSocials(TestCase):
     #         stream.output(output_path, **output_args).run(overwrite_output=True)
 
 
-    #     input_path = "./static/imposting-video.mp4"
-    #     output_path = "./static/imposting-video-reel-tiktok.mp4"
+    #     input_path = "./static/sample-video.mp4"
+    #     output_path = "./static/sample-video-reel-tiktok.mp4"
 
     #     convert_video_for_tiktok(input_path, output_path)
 
@@ -367,7 +367,7 @@ class TestPostingOnSocials(TestCase):
 
     #         ffmpeg.run(stream)
 
-    #     input_path = "./static/imposting-video.mp4"
-    #     output_path = "./static/imposting-video-reel.mp4"
+    #     input_path = "./static/sample-video.mp4"
+    #     output_path = "./static/sample-video-reel.mp4"
 
     #     convert_to_reel_format(input_path, output_path, duration_limit=60)

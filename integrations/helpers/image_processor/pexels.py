@@ -57,7 +57,7 @@ def get_relevant_image_for_text(text: str):
     
     except Exception as err:
         log.exception(err)
-        send_notification("ImPosting", f"Error on pexels: {err}")
+        send_notification("SocialScheduler", f"Error on pexels: {err}")
         
         src = Path(__file__).parent / "bg.jpg"
         dst = f"/tmp/{uuid.uuid4().hex}.jpg"

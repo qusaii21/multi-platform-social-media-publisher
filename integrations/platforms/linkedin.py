@@ -203,7 +203,7 @@ async def post_on_linkedin(
             log.error(f"Linkedin post error: {integration.account_id} {err}")
             log.exception(err)
             send_notification(
-                "ImPosting", f"AccountId: {integration.account_id} got error {err}"
+                "SocialScheduler", f"AccountId: {integration.account_id} got error {err}"
             )
     else:
         err = "(Re-)Authorize Linkedin on Integrations page"

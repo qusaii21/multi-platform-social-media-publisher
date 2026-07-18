@@ -1,13 +1,13 @@
-imposting.localhost {
-	reverse_proxy imposting-web:8000
+scheduler.localhost {
+	reverse_proxy scheduler-web:8000
 
     handle_path /static/* {
-        root * /imposting/staticfiles
+        root * /scheduler/staticfiles
         file_server
     }
 
     handle_path /media/* {
-        root * /imposting/media
+        root * /scheduler/media
         file_server
     }
 

@@ -135,7 +135,7 @@ The app store or process any unnecessary personal data beyond what is required f
 
 ## Screenshots
 
-Allow ImPosting to post on your behalf. Click on Authorize button. 
+Allow the app to post on your behalf. Click on Authorize button. 
 If you don't see your posts published come on this page and click on Authorize button again (the token expired and the app needs a new one). 
 
 <img width="2520" height="1696" alt="image-1" src="https://github.com/user-attachments/assets/a28bb4a5-f959-4d08-9af0-bfe923d3cf3a" />

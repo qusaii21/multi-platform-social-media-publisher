@@ -266,7 +266,7 @@ async def post_on_facebook(
             log.error(f"Facebook post error: {integration.account_id} {err}")
             log.exception(err)
             send_notification(
-                "ImPosting", f"AccountId: {integration.account_id} got error {err}"
+                "SocialScheduler", f"AccountId: {integration.account_id} got error {err}"
             )
     else:
         err = "(Re-)Authorize Facebook on Integrations page"
