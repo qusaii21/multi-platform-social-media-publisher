@@ -113,14 +113,6 @@ See `.env.example` for the full list. Key ones:
 - In Auth tab set the callback url: https://ngrok-or-prod-url.app/linkedin/callback/;
 - Update .env file with Client ID (LINKEDIN_CLIENT_ID) and Primary Client Secret (LINKEDIN_CLIENT_SECRET);
 
-App stores only the fields necessary for scheduling and publishing TikTok content on behalf of users.
-
-When a user connects their TikTok account, the app saves:
-- user_id / open_id (TikTok user identifier).
-- access_token and refresh_token (to enable API calls).
-- access_expire and refresh_expire (expiration timestamps).
-- username and avatar_url (for account display in dashboard).
-
 For each scheduled/published post, we save:
 - comment_disabled (boolean) - to respect user’s comment preferences.
 - duet_disabled (boolean) - to respect duet permissions.
@@ -134,9 +126,6 @@ For each scheduled/published post, we save:
 The app store or process any unnecessary personal data beyond what is required for authentication, account identification, and content scheduling.
 
 ## Screenshots
-
-Allow the app to post on your behalf. Click on Authorize button. 
-If you don't see your posts published come on this page and click on Authorize button again (the token expired and the app needs a new one). 
 
 <img width="2520" height="1696" alt="image-1" src="https://github.com/user-attachments/assets/a28bb4a5-f959-4d08-9af0-bfe923d3cf3a" />
 
