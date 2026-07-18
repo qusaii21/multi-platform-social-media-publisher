@@ -113,16 +113,6 @@ See `.env.example` for the full list. Key ones:
 - In Auth tab set the callback url: https://ngrok-or-prod-url.app/linkedin/callback/;
 - Update .env file with Client ID (LINKEDIN_CLIENT_ID) and Primary Client Secret (LINKEDIN_CLIENT_SECRET);
 
-
-## TikTok
-
-- You'll need a business tiktok account to post via API;
-- Google [tiktok for developers](https://developers.tiktok.com/);
-- Create an app;
-- Add products Login Kit and Content Posting API
-- In Login Kit set the callback url: https://ngrok-or-prod-url.app/tiktok/callback/;
-- Add your tiktok account in Target Users for testing;
-
 App stores only the fields necessary for scheduling and publishing TikTok content on behalf of users.
 
 When a user connects their TikTok account, the app saves:
@@ -148,15 +138,18 @@ The app store or process any unnecessary personal data beyond what is required f
 Allow ImPosting to post on your behalf. Click on Authorize button. 
 If you don't see your posts published come on this page and click on Authorize button again (the token expired and the app needs a new one). 
 
-![integrations](./static/dark-integrations.png)
+<img width="2520" height="1696" alt="image-1" src="https://github.com/user-attachments/assets/a28bb4a5-f959-4d08-9af0-bfe923d3cf3a" />
+
 
 A simple calendar where you can see the days you have posts or not. Select day or click Post Today button.
 
-![calendar](./static/dark-calendar.png)
+<img width="2520" height="1696" alt="image-2" src="https://github.com/user-attachments/assets/db637875-047d-4211-8414-7f5284912893" />
+
 
 Just a simple form to write your post and add a image.
 
-![schedule](./static/dark-schedule-post.png)
+<img width="2520" height="1696" alt="image-3" src="https://github.com/user-attachments/assets/7515fd3f-9d48-44ef-b0c5-89ed36c95569" />
+
 
 
 You can view posts for selected day below the schedule form. 
