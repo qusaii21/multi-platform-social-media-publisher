@@ -1,55 +1,71 @@
-<div align="center">
-  <strong>
-  <h2>A Simple (no fluff) Social Media Posts Scheduler</h2><br />
-  </strong>
-</div>
+# Social Media Post Scheduler
 
+A web application built with Django that lets users connect their social media accounts and schedule posts to be published automatically across multiple platforms, including Facebook, Instagram, LinkedIn, and X.
 
-<p align="center">
-Built with Django and AlpineJs. Schedule posts with text/image/link on Facebook public page, Instagram profesional account, TikTok business account, Linkedin, X. Deploy it yourself or contact me to help you deploy it.
-</p>
+## Features
 
-## Key Features & Recent Improvements
+- Connect social media accounts via OAuth2
+- Schedule posts with text, images, or links
+- Automatic publishing at the scheduled time
+- Simple dashboard to create, view, and track post status
 
-* 💎 **PostFlow Glassmorphic UI**: A premium, completely redesigned user interface featuring dark/light themes, sleek card components, glassmorphism, micro-animations, and structured styles.
-* 🔄 **Instagram Media Polling**: High-reliability posting on Instagram. The background poster polls Meta's Graph API for the media container's status (`FINISHED`/`ERROR`) before triggering publication.
-* 🖼️ **Refined Image Processing**: Auto-resizes and optimizes uploaded images for social platform compliance. Post captions are passed in metadata descriptions instead of being burned onto the image canvas.
-* 🛡️ **Avatar Handling safety**: Prevented server-side failures on user connection screens when third-party account profile avatars are missing or null.
-* ⏱️ **Accurate Scheduling**: Scheduling runs exactly when requested, removing the previous automatic 5-minute offset delay.
+## Tech Stack
 
-
-
-
-## Get social media OAuth2 ids and secrets
-
-For all of them you need to search for developer + X or developer + Linkedin etc. to go to the platform where you can create an app and get the keys needed for integrating with their api. Search for "How to make posts via Linkedin/X/Facebook/etc api" you will find some up to date docs on what steps you need to take. Check .env.example for the needed ids and secrets.
-
+- **Backend**: Django
+- **Frontend**: AlpineJS
+- **Task Runner**: Custom background poster process
 
 ## Quickstart
 
-While developing:
-- `make dev` - start django app;
-- `make poster` - start background social media poster (needs manual restarts on changes);
+**1. Install dependencies**
 
-Use ngrok for `APP_URL` in `.env` file for Google auth callback and social media callbacks;
+```bash
+uv sync
+```
 
-Project is using [uv](https://docs.astral.sh/uv/) for managing dependencies.
+**2. Configure environment**
 
-- `uv sync` - install all packages;
-- `uv sync --upgrade` - install all packages at their latest versions;
-- `uv add package` - add a package in dependencies;
-- `uv remove package` - remove a package from dependencies;
+```bash
+cp .env.example .env
+```
 
-Shortcut make commands:
+Fill in your `SECRET_KEY`, `APP_URL`, and any social platform OAuth credentials you need.
 
-- `make migrate-all` - migrate all models changes;
-- `make purge-db` - delete all data and migration dirs;
-- `make poster` - start post scheduler;
-- `docker network create web` - one time thing;
-- `make start` - start app in docker;
-- `make stop` - stop app in docker;
-- `make build` - build app in docker;
-- `make applogs` - show app logs in docker;
+**3. Run migrations**
+
+```bash
+make migrate-all
+```
+
+**4. Start the app**
+
+```bash
+make dev       # Django dev server
+make poster    # Background post publisher (separate terminal)
+```
+
+App runs at `http://127.0.0.1:8000`.
+
+## Docker
+
+```bash
+docker network create web   # one-time
+make build
+make start
+```
+
+## Environment Variables
+
+See `.env.example` for the full list. Key ones:
+
+| Variable | Description |
+|---|---|
+| `SECRET_KEY` | Django secret key |
+| `APP_URL` | Your app's public URL (use ngrok for local dev) |
+| `FACEBOOK_CLIENT_ID/SECRET` | Meta app credentials |
+| `LINKEDIN_CLIENT_ID/SECRET` | LinkedIn app credentials |
+| `X_CLIENT_ID/SECRET` | X (Twitter) app credentials |
+| `SOCIAL_AUTH_GOOGLE_OAUTH2_KEY/SECRET` | Google OAuth credentials |
 
 
 ## Google SignIn Configuration
